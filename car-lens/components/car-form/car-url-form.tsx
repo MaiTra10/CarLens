@@ -84,7 +84,7 @@ export function CarUrlForm({ onSuccess }: CarUrlFormProps) {
           </p>
         </div>
 
-        <Button type="submit" disabled={isLoading} className="w-full">
+        <Button type="submit" disabled={isLoading} className="w-full hover:cursor-pointer">
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -65,16 +65,16 @@ export function CarManualForm({ onSuccess }: CarManualFormProps) {
       const year = parseInt(formData.year);
       const mileage = parseInt(formData.mileage);
       const currentYear = new Date().getFullYear();
-      
+
       // Very simple mock algorithm for demo purposes
       const basePrice = 30000;
       const yearFactor = (currentYear - year) * 1000;
       const mileageFactor = mileage * 0.05;
-      const conditionFactor = 
+      const conditionFactor =
         formData.condition === "excellent" ? 2000 :
-        formData.condition === "good" ? 0 :
-        formData.condition === "fair" ? -2000 : -4000;
-      
+          formData.condition === "good" ? 0 :
+            formData.condition === "fair" ? -2000 : -4000;
+
       const mockPrice = Math.max(5000, basePrice - yearFactor - mileageFactor + conditionFactor);
 
       const mockEstimate: Estimate = {
@@ -202,7 +202,7 @@ export function CarManualForm({ onSuccess }: CarManualFormProps) {
           />
         </div>
 
-        <Button type="submit" disabled={isLoading} className="w-full">
+        <Button type="submit" disabled={isLoading} className="w-full hover:cursor-pointer">
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -226,7 +226,7 @@ export function CarManualForm({ onSuccess }: CarManualFormProps) {
             </p>
             <p>
               <span className="font-semibold">Condition:</span>{" "}
-              {result.condition 
+              {result.condition
                 ? result.condition.charAt(0).toUpperCase() + result.condition.slice(1)
                 : "Not specified"}
             </p>

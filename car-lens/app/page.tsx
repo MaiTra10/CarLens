@@ -13,7 +13,7 @@ export default function Home() {
             <Link href="#how-it-works" className="hover:text-slate-600">How It Works</Link>
             <Link href="/login" className="hover:text-slate-600">Login</Link>
             <Link href="/register">
-              <Button>Sign Up</Button>
+              <Button className="hover:cursor-pointer">Sign Up</Button>
             </Link>
           </nav>
         </header>
@@ -27,10 +27,10 @@ export default function Home() {
           </p>
           <div className="flex gap-4">
             <Link href="/register">
-              <Button size="lg">Get Started</Button>
+              <Button size="lg" className="hover:cursor-pointer">Get Started</Button>
             </Link>
             <Link href="/dashboard?guest=true">
-              <Button variant="outline" size="lg">Continue as Guest</Button>
+              <Button variant="outline" size="lg" className="hover:cursor-pointer">Continue as Guest</Button>
             </Link>
           </div>
           <div className="mt-4">

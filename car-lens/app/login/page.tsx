@@ -20,7 +20,7 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-    
+
     // For now, we'll just simulate a delay and redirect to dashboard
     // In a real app, this would be a call to an authentication API
     setTimeout(() => {
@@ -99,7 +99,7 @@ export default function LoginPage() {
                   <span className="bg-white px-2 text-slate-500">Or</span>
                 </div>
               </div>
-              <Button variant="outline" onClick={() => router.push('/dashboard?guest=true')} className="w-full">
+              <Button variant="outline" onClick={() => router.push('/dashboard?guest=true')} className="w-full  hover:cursor-pointer">
                 Continue as Guest
               </Button>
             </div>
