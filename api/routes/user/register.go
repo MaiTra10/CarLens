@@ -50,7 +50,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		Email:    registrationParams.Email,
 	}
 
-	if isValidEmail(userEntry.Email) {
+	if !isValidEmail(userEntry.Email) {
 		http.Error(w, "ERROR: Invalid Email used with registration", http.StatusBadRequest)
 	}
 
