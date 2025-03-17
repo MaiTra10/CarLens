@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -61,12 +61,12 @@ export default function Navbar({ isGuestMode = false }: NavbarProps) {
                 History
               </Link>
             )}
-            <Link href="/help" className="text-slate-600 hover:text-slate-900">
+            <Link href="/" className="text-slate-600 hover:text-slate-900">
               Help
             </Link>
           </nav>
         </div>
-        
+
         <div className="flex items-center">
           {isGuestMode ? (
             <div className="space-x-2">
