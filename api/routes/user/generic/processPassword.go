@@ -1,4 +1,4 @@
-package user
+package generic
 
 import (
 	"crypto/rand"
@@ -26,7 +26,7 @@ func generateSalt(length int) ([]byte, error) {
 
 }
 
-func hashPassword(password string, salt []byte) (saltEncodedString string, passwordHashEncodedString string) {
+func HashPassword(password string, salt []byte) (saltEncodedString string, passwordHashEncodedString string) {
 
 	time := uint32(1)
 	memory := uint32(64 * 1024)
@@ -42,14 +42,14 @@ func hashPassword(password string, salt []byte) (saltEncodedString string, passw
 
 }
 
-func processPassword(password string, userUUID string) (PasswordHashData, error) {
+func ProcessPassword(password string, userUUID string) (PasswordHashData, error) {
 
 	salt, err := generateSalt(16)
 	if err != nil {
 		return PasswordHashData{}, err
 	}
 
-	saltEncodedString, passwordHashEncodedString := hashPassword(password, salt)
+	saltEncodedString, passwordHashEncodedString := HashPassword(password, salt)
 
 	return PasswordHashData{
 		UserUUID:     userUUID,
