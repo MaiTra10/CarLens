@@ -2,12 +2,19 @@ package user
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+
+	"github.com/MaiTra10/CarLens/api/internal"
 )
 
 type LoginParameters struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type userResult struct {
+	UUID string `json:"uuid"`
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -24,5 +31,36 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "ERROR: Body is invalid", http.StatusBadRequest)
 		return
 	}
+
+	supabase := internal.GetSupabaseClient()
+
+	fmt.Println("skibidi")
+	var userResult map[string]interface{}
+	err = supabase.DB.From("users").Select("user_uuid").Single().Eq("email", LoginParams.Email).Execute(&userResult)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	fmt.Println(userResult)
+
+	// var hash map[string]interface{}
+	// err = supabase.DB.From("passwords").Select("hash").Single().Eq("user_uuid", userResult).Execute(&hash)
+	// if err != nil {
+	// 	http.Error(w, "toilet", http.StatusUnauthorized)
+	// 	return
+	// }
+
+	// var salt map[string]interface{}
+	// err = supabase.DB.From("passwords").Select("salt").Single().Eq("user_uuid", userResult).Execute(&salt)
+	// if err != nil {
+	// 	http.Error(w, "skibidi", http.StatusUnauthorized)
+	// 	return
+	// }
+
+	// if !generic.ComparePassword(LoginParams.Password, hash, salt) {
+	// 	http.Error(w, "Invalid password or something", http.StatusUnauthorized)
+	// 	return
+	// }
 
 }
