@@ -10,7 +10,7 @@ import (
 type PasswordHashData struct {
 	UserUUID     string `json:"user_uuid"`
 	Salt         string `json:"salt"`
-	PasswordHash string `json:"hashed_password"`
+	PasswordHash string `json:"hash"`
 }
 
 func generateSalt(length int) ([]byte, error) {
