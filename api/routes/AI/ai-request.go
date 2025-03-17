@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
+	"regexp"
+	"strings"
 )
 
 // Structs
@@ -34,6 +37,72 @@ type ClientRequest struct {
 	Message string `json:"message"`
 }
 
+// used for detect URL syntax
+var urlRegex = regexp.MustCompile(`https?://[^\s]+`)
+
+// Handle URL
+func processURLs(prompt string) (string, error) {
+	// Take URL and non-URL content
+	urls := urlRegex.FindAllString(prompt, -1)
+	nonURLContent := strings.TrimSpace(urlRegex.ReplaceAllString(prompt, ""))
+
+	// handle All URL (if multi-URL)
+	var urlContents []string
+	for _, rawURL := range urls {
+		content, err := fetchURLContent(rawURL)
+		if err != nil {
+			return "", fmt.Errorf("handle URL Failed %s: %v", rawURL, err)
+		}
+		urlContents = append(urlContents, content)
+	}
+
+	// Build fianl Prompt
+	var builder strings.Builder
+	if nonURLContent != "" {
+		builder.WriteString(nonURLContent)
+	}
+	for _, content := range urlContents {
+		if builder.Len() > 0 {
+			builder.WriteString("\n\n")
+		}
+		builder.WriteString(content)
+	}
+
+	return builder.String(), nil
+}
+
+// using Jina AI API
+func fetchURLContent(rawURL string) (string, error) {
+	// encod URL
+	encodedURL := url.QueryEscape(rawURL)
+	targetURL := "https://r.jina.ai/" + encodedURL
+
+	req, err := http.NewRequest("GET", targetURL, nil)
+	if err != nil {
+		return "", fmt.Errorf("request creation faild for jinaAI: %v", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer jina_1b29c5ff413144aa8056aa02dc0f7f74W1tAnacsgJXZGcYsOa19xD7UI8C4") //This is api key
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("API Request Failed For jinaAI: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("API Return Error Code For jinaAI: %s", resp.Status)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("read reply failed for jinaAI: %v", err)
+	}
+
+	return string(body), nil
+}
+
 // Main, AIHandler function
 func AIHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Debug: AI Request Start.")
@@ -54,13 +123,38 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Handle URL and create new prompt
+	processedPrompt, err := processURLs(clientReq.Message)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("URL convert failed: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	//System Prompt That Can Change.
+	const SystemPrompt = `You are a car information summary assistant named CarLens. 
+							Your capabilities:
+							1. Analyze used car listings using provided URLs(The URL information will be provided) or manually entered data
+							2. Compare target vehicle with other used cars of the same model
+							3. Provide buying advice including:
+							- Price fairness assessment (fair/overpriced/undervalued)
+							- Recall history analysis
+							- Reliability rating (1-5 scale)
+							4. Response requirements:
+							- Use English exclusively
+							- Keep responses concise (under 200 words)
+							- Present key points in bullet format`
+
 	//structure text for AI API
 	openaiReq := OpenAIRequest{
-		Model: "bot-20250312075157-h5q4q", //Special Model name for project
+		Model: "deepseek-chat", //Special Model name for project
 		Messages: []Message{
 			{
+				Role:    "system",
+				Content: SystemPrompt, // System Prompt
+			},
+			{
 				Role:    "user",
-				Content: clientReq.Message,
+				Content: processedPrompt,
 			},
 		},
 	}
@@ -74,10 +168,10 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 
 	//Create Client and https Request
 	client := &http.Client{}
-	req, _ := http.NewRequest("POST", "https://ark.cn-beijing.volces.com/api/v3/bots/chat/completions", bytes.NewBuffer(reqBody))
+	req, _ := http.NewRequest("POST", "https://api.deepseek.com/chat/completions", bytes.NewBuffer(reqBody))
 
 	//set api key and header for Request
-	apiKey := "6edb7c5b-e6be-42c2-bb8d-324b2e7c47f4" //This should be hidden or store as envirment varable, but it's just a small project.
+	apiKey := "sk-c0864ddde7454abea3264922ab943db5" //This should be hidden or store as envirment varable, but it's just a small project.
 	//I guess no one will use this for bad things... Right?
 	if apiKey == "" {
 		http.Error(w, `{"error": "API key not configured"}`, http.StatusInternalServerError)
