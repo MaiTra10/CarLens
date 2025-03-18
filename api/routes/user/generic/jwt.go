@@ -1,7 +1,6 @@
 package generic
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	tm "time"
@@ -33,7 +32,13 @@ func CreateJWT(user_email string) (string, tm.Time, error) {
 
 }
 
-func DecodeJWT(tokenString string) (string, error) {
+type JWTParameters struct {
+	Sub string `json:"sub"`
+	Iat string `json:"iat"`
+	Exp string `json:"exp"`
+}
+
+func DecodeJWT(tokenString string) (JWTParameters, error) {
 
 	claims := jwt.MapClaims{}
 
@@ -44,17 +49,18 @@ func DecodeJWT(tokenString string) (string, error) {
 		return []byte(secretKey), nil
 	})
 	if err != nil {
-		return "", err
+		return JWTParameters{}, err
 	}
 
 	if token.Valid {
-		jsonData, err := json.MarshalIndent(claims, "", "  ")
-		if err != nil {
-			return "", err
+		jwtParams := JWTParameters{
+			Sub: fmt.Sprintf("%v", claims["sub"]),
+			Iat: fmt.Sprintf("%v", claims["iat"]),
+			Exp: fmt.Sprintf("%v", claims["exp"]),
 		}
-		return string(jsonData), nil
+		return jwtParams, nil
 	}
 
-	return "", fmt.Errorf("ERROR: Token is invalid")
+	return JWTParameters{}, fmt.Errorf("ERROR: Token is invalid")
 
 }

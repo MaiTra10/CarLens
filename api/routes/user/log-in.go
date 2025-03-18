@@ -2,7 +2,6 @@ package user
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/MaiTra10/CarLens/api/internal"
@@ -80,14 +79,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		Expires:  jwtExpiration,
 		SameSite: http.SameSiteStrictMode,
 	})
-
-	decodedToken, err := generic.DecodeJWT(token)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	fmt.Println(decodedToken)
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("SUCCESS: User is authenticated\n"))
