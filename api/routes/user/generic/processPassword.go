@@ -1,6 +1,7 @@
 package generic
 
 import (
+	"bytes"
 	"crypto/rand"
 	"encoding/base64"
 
@@ -12,6 +13,13 @@ type PasswordHashData struct {
 	Salt         string `json:"salt"`
 	PasswordHash string `json:"hash"`
 }
+
+const (
+	time      = uint32(1)
+	memory    = uint32(64 * 1024)
+	threads   = uint8(4)
+	keyLength = uint32(32)
+)
 
 func generateSalt(length int) ([]byte, error) {
 
@@ -27,11 +35,6 @@ func generateSalt(length int) ([]byte, error) {
 }
 
 func HashPassword(password string, salt []byte) (saltEncodedString string, passwordHashEncodedString string) {
-
-	time := uint32(1)
-	memory := uint32(64 * 1024)
-	threads := uint8(4)
-	keyLength := uint32(32)
 
 	passwordHash := argon2.IDKey([]byte(password), salt, time, memory, threads, keyLength)
 
@@ -56,5 +59,27 @@ func ProcessPassword(password string, userUUID string) (PasswordHashData, error)
 		Salt:         saltEncodedString,
 		PasswordHash: passwordHashEncodedString,
 	}, nil
+
+}
+
+func ComparePassword(password string, storedHash string, storedSalt string) bool {
+
+	// Decode the stored salt and hash
+	salt, err := base64.StdEncoding.DecodeString(storedSalt)
+	if err != nil {
+		// something went wrong with decoding salt
+		return false
+	}
+
+	hash, err := base64.StdEncoding.DecodeString(storedHash)
+	if err != nil {
+		// something went wrong with decoding hash
+		return false
+	}
+
+	// compute the hash for the user provided password
+	computedHash := argon2.IDKey([]byte(password), salt, time, memory, threads, keyLength)
+
+	return bytes.Equal(hash, computedHash)
 
 }
