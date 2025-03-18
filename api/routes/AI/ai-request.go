@@ -165,7 +165,8 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 							- Keep the listing_summary short and to the point with a rating of the listing, NOT the car, out of 5 stars to one decimal point.
 							- drivetrain is whether the car is FWD, RWD, AWD, 4WD.
 							- Always use the highest odometer number listed in posting, assume units are km unless specified. Always Priortize milage data in description
-							- If the odometer is one of the following placeholders: (123 km ,123123 km, 1 km, 0 km), try to find the real milage. Otherwise leave as null`
+							- If the odometer is one of the following placeholders: (123 km ,123123 km, 1 km, 0 km), try to find the real milage. Otherwise leave as null
+							- dealer should be either "dealer" if the seller is a company, else mark it as "private sale" if the seller is a person.`
 
 	//structure text for AI API
 	openaiReq := OpenAIRequest{
