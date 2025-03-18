@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/MaiTra10/CarLens/api/internal"
+	"github.com/MaiTra10/CarLens/api/routes/user"
 )
 
 // Structs
@@ -354,6 +355,9 @@ func ParseAIResponseToListing(aiResponse string) (*Listing, error) {
 			// fmt.Printf("Unknown key: %s\n", key)
 		}
 	}
+
+	// Attribute the user to this listing
+	listing.UploadUserUUID = user.GetUserSession()
 
 	return listing, nil
 }
