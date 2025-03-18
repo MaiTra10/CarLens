@@ -161,7 +161,7 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 							- Keep responses concise and to the point.
 							- If you cannot find the information for some of these values, attempt to find data from the description. 
 							- If data is not found on the page, reason possible data using info known about the car model and parts/modifcations mentioned in listing. 
-							- Only leave fields null or empty if they absolutely cannot be obtained.
+							- Only leave fields as "unknown" if they absolutely cannot be obtained.
 							- Keep the listing_summary short and to the point with a rating of the listing, NOT the car, out of 5 stars to one decimal point.
 							- drivetrain is whether the car is FWD, RWD, AWD, 4WD.
 							- Always use the highest odometer number listed in posting, assume units are km unless specified. Always Priortize milage data in description
@@ -266,8 +266,9 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error:", err)
 		return
 	}
-	fmt.Println("\n__________________________________________\n", listing)
+	fmt.Println("\n__________________________________________\n")
 	fmt.Printf("Type of listing: %T\n", listing)
+	fmt.Printf("%+v\n", listing)
 	sendResponseToDatabase(listing)
 
 	json.NewEncoder(w).Encode(response)
@@ -275,7 +276,6 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 
 // Listing Struct
 type Listing struct {
-	ListingID         string `json:"listing_id"`
 	UploadUserUUID    string `json:"upload_user_uuid"`
 	Source            string `json:"source"`
 	Title             string `json:"title"`
