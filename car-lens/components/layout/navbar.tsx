@@ -1,3 +1,4 @@
+// File: components/layout/navbar.tsx
 "use client";
 
 import Link from "next/link";
@@ -13,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Menu } from "lucide-react";
+import { useAuth } from "@/context/auth-context";
 import AnimatedLogo from "../logos/animated-logo";
 
 interface NavbarProps {
@@ -20,6 +22,7 @@ interface NavbarProps {
 }
 
 export default function Navbar({ isGuestMode = false }: NavbarProps) {
+  const { isAuthenticated, logout } = useAuth();
   const [user] = useState(isGuestMode ? null : {
     name: "Demo User",
     email: "user@example.com",
@@ -37,8 +40,7 @@ export default function Navbar({ isGuestMode = false }: NavbarProps) {
   };
 
   const handleLogout = () => {
-    console.log("Logging out...");
-    window.location.href = "/";
+    logout();
   };
 
   return (
@@ -46,7 +48,7 @@ export default function Navbar({ isGuestMode = false }: NavbarProps) {
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
         <div className="flex items-center">
           <Link href="/" className="flex items-center">
-            <AnimatedLogo />
+            <AnimatedLogo/>
           </Link>
           {isGuestMode && (
             <span className="ml-2 bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full">
@@ -59,7 +61,7 @@ export default function Navbar({ isGuestMode = false }: NavbarProps) {
             <Link href="/dashboard" className="text-slate-600 hover:text-slate-900">
               Dashboard
             </Link>
-            {!isGuestMode && (
+            {!isGuestMode && isAuthenticated && (
               <Link href="/history" className="text-slate-600 hover:text-slate-900">
                 History
               </Link>
@@ -88,13 +90,13 @@ export default function Navbar({ isGuestMode = false }: NavbarProps) {
                 <Button size="sm">Create Account</Button>
               </Link>
             </div>
-          ) : (
+          ) : isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                   <Avatar>
                     <AvatarImage src={user?.avatarUrl} alt={user?.name} />
-                    <AvatarFallback>{user?.name ? getInitials(user.name) : "G"}</AvatarFallback>
+                    <AvatarFallback>{user?.name ? getInitials(user.name) : "U"}</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
@@ -116,6 +118,15 @@ export default function Navbar({ isGuestMode = false }: NavbarProps) {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+          ) : (
+            <div className="space-x-2">
+              <Link href="/login">
+                <Button variant="ghost" size="sm">Sign In</Button>
+              </Link>
+              <Link href="/register">
+                <Button size="sm">Create Account</Button>
+              </Link>
+            </div>
           )}
         </div>
       </div>
@@ -127,7 +138,7 @@ export default function Navbar({ isGuestMode = false }: NavbarProps) {
             <Link href="/dashboard" className="block py-2 text-slate-600 hover:text-slate-900">
               Dashboard
             </Link>
-            {!isGuestMode && (
+            {!isGuestMode && isAuthenticated && (
               <Link href="/history" className="block py-2 text-slate-600 hover:text-slate-900">
                 History
               </Link>
@@ -146,7 +157,7 @@ export default function Navbar({ isGuestMode = false }: NavbarProps) {
                     <Button className="w-full" size="sm">Create Account</Button>
                   </Link>
                 </div>
-              ) : (
+              ) : isAuthenticated ? (
                 <div className="flex flex-col space-y-2">
                   <Link href="/profile">
                     <Button variant="ghost" className="w-full justify-start" size="sm">Profile</Button>
@@ -165,6 +176,15 @@ export default function Navbar({ isGuestMode = false }: NavbarProps) {
                   >
                     Log out
                   </Button>
+                </div>
+              ) : (
+                <div className="flex flex-col space-y-2">
+                  <Link href="/login">
+                    <Button variant="ghost" className="w-full justify-start" size="sm">Sign In</Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button className="w-full" size="sm">Create Account</Button>
+                  </Link>
                 </div>
               )}
             </div>

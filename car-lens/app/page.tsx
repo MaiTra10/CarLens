@@ -1,29 +1,62 @@
+// File: app/page.tsx
 "use client";
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/context/auth-context";
+import { useRouter } from "next/navigation";
 import AnimatedLogo from "@/components/logos/animated-logo";
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { isAuthenticated, isLoading, logout } = useAuth();
+  const router = useRouter();
+
+  // Handle login button click based on auth state
+  const handleLoginClick = (e: React.MouseEvent) => {
+    if (isAuthenticated) {
+      e.preventDefault();
+      router.push("/dashboard");
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
       <div className="flex-1">
         <header className="container mx-auto p-4 sm:p-6 flex justify-between items-center">
-        <AnimatedLogo />
+          <Link href="/" className="flex items-center">
+            <AnimatedLogo />
+          </Link>
           
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
             <Link href="#features" className="hover:text-slate-600">Features</Link>
             <Link href="#how-it-works" className="hover:text-slate-600">How It Works</Link>
-            <Link href="/login" className="hover:text-slate-600">Login</Link>
-            <Link href="/register">
-              <Button className="h-9">Sign Up</Button>
-            </Link>
+            
+            {isAuthenticated ? (
+              <>
+                <Link href="/dashboard" className="hover:text-slate-600">Dashboard</Link>
+                <Button 
+                  variant="outline" 
+                  className="h-9 bg-blue-500 hover:bg-blue-600 text-white hover:text-white" 
+                  onClick={logout}
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="hover:text-slate-600" onClick={handleLoginClick}>
+                  Login
+                </Link>
+                <Link href="/register">
+                  <Button className="h-9">Sign Up</Button>
+                </Link>
+              </>
+            )}
           </nav>
           
           {/* Mobile Menu Button */}
@@ -44,12 +77,34 @@ export default function Home() {
               <Link href="#how-it-works" className="block py-2 text-slate-600 hover:text-slate-900">
                 How It Works
               </Link>
-              <Link href="/login" className="block py-2 text-slate-600 hover:text-slate-900">
-                Login
-              </Link>
-              <Link href="/register" className="block py-3">
-                <Button className="w-full">Sign Up</Button>
-              </Link>
+              
+              {isAuthenticated ? (
+                <>
+                  <Link href="/dashboard" className="block py-2 text-slate-600 hover:text-slate-900">
+                    Dashboard
+                  </Link>
+                  <Button 
+                    variant="outline" 
+                    className="w-full mt-2 bg-blue-500 hover:bg-blue-600 text-white hover:text-white" 
+                    onClick={logout}
+                  >
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link 
+                    href="/login" 
+                    className="block py-2 text-slate-600 hover:text-slate-900"
+                    onClick={handleLoginClick}
+                  >
+                    Login
+                  </Link>
+                  <Link href="/register" className="block py-3">
+                    <Button className="w-full">Sign Up</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}
@@ -62,11 +117,19 @@ export default function Home() {
             CarLens uses AI to analyze car listings and provide you with the most accurate price estimates. No more overpaying or underselling.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
-            <Link href="/register" className="w-full sm:w-auto">
-              <Button size="lg" className="w-full sm:w-auto">Get Started</Button>
-            </Link>
-            <Link href="/dashboard?guest=true" className="w-full sm:w-auto">
-              <Button variant="outline" size="lg" className="w-full sm:w-auto">Continue as Guest</Button>
+            {isAuthenticated ? (
+              <Link href="/dashboard" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto">Go to Dashboard</Button>
+              </Link>
+            ) : (
+              <Link href="/register" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto">Get Started</Button>
+              </Link>
+            )}
+            <Link href={isAuthenticated ? "/dashboard" : "/dashboard?guest=true"} className="w-full sm:w-auto">
+              <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                {isAuthenticated ? "View Estimates" : "Continue as Guest"}
+              </Button>
             </Link>
           </div>
           <div className="mt-4">

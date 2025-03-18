@@ -1,39 +1,60 @@
+// File: app/login/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import AnimatedLogo from "@/components/logos/animated-logo";
+import { useAuth } from "@/context/auth-context";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login, isAuthenticated } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // Redirect if already authenticated
+
+  useEffect(() => {
+    console.log("Login page - isAuthenticated:", isAuthenticated);
+
+    // Only redirect if we've confirmed authentication
+    if (isAuthenticated) {
+      console.log("User is authenticated, redirecting to dashboard");
+      router.push("/dashboard");
+    }
+  }, [isAuthenticated, router]);
+
+  // Also update the handleSubmit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-    
-    // For now, we'll just simulate a delay and redirect to dashboard
-    // In a real app, this would be a call to an authentication API
-    setTimeout(() => {
-      // Skip actual authentication for now
-      console.log("Login with", { email, password });
-      setIsLoading(false);
-      router.push("/dashboard");
-    }, 1000);
 
-    // Example of how error would be handled
-    // setError("Invalid email or password");
-    // setIsLoading(false);
+    try {
+      console.log("Submitting login form...");
+      await login(email, password);
+
+      // Don't redirect here - let the useEffect handle it
+      // This avoids potential race conditions
+    } catch (error: any) {
+      setError(error.message || "An error occurred during login");
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -45,7 +66,9 @@ export default function LoginPage() {
               <AnimatedLogo />
             </Link>
           </div>
-          <CardTitle className="text-2xl font-bold text-center">Welcome back</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">
+            Welcome back
+          </CardTitle>
           <CardDescription className="text-center">
             Enter your credentials to sign in to your account
           </CardDescription>
@@ -102,7 +125,11 @@ export default function LoginPage() {
                   <span className="bg-white px-2 text-slate-500">Or</span>
                 </div>
               </div>
-              <Button variant="outline" onClick={() => router.push('/dashboard?guest=true')} className="w-full h-11">
+              <Button
+                variant="outline"
+                onClick={() => router.push("/dashboard?guest=true")}
+                className="w-full h-11"
+              >
                 Continue as Guest
               </Button>
             </div>
