@@ -308,16 +308,3 @@ func extractString(value interface{}) string {
 	}
 	return ""
 }
-
-func extractStringArray(value interface{}) []string {
-	if arr, ok := value.([]interface{}); ok {
-		var result []string
-		for _, v := range arr {
-			if str, ok := v.(string); ok {
-				result = append(result, str)
-			}
-		}
-		return result
-	}
-	return []string{}
-}
