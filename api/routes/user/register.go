@@ -3,21 +3,15 @@ package user
 import (
 	"encoding/json"
 	"net/http"
-	"regexp"
 
 	"github.com/MaiTra10/CarLens/api/internal"
+	"github.com/MaiTra10/CarLens/api/routes/user/generic"
 	"github.com/google/uuid"
 )
 
 type RegisterParameters struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
-}
-
-type ResponseParamaters struct {
-	StatusCode int    `json:"statusCode"`
-	Body       string `json:"body"`
-	Headers    string `json:"headers"`
 }
 
 type User struct {
@@ -40,12 +34,12 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !isValidEmail(registrationParams.Email) {
+	if !generic.IsValidEmail(registrationParams.Email) {
 		http.Error(w, "ERROR: Invalid Email used with registration", http.StatusBadRequest)
 		return
 	}
 
-	if !isValidPassword(registrationParams.Password) {
+	if !generic.IsValidPassword(registrationParams.Password) {
 		http.Error(w, "ERROR: Invalid Password used with registration", http.StatusBadRequest)
 		return
 	}
@@ -70,13 +64,13 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	passwordEntry, err := processPassword(registrationParams.Password, userEntry.UserUUID)
+	passwordEntry, err := generic.ProcessPassword(registrationParams.Password, userEntry.UserUUID)
 	if err != nil {
 		http.Error(w, "ERROR: Something went wrong while processing password salt or hash", http.StatusInternalServerError)
 		return
 	}
 
-	var passwordResult []PasswordHashData
+	var passwordResult []generic.PasswordHashData
 	err = supabase.DB.From("passwords").Insert(passwordEntry).Execute(&passwordResult)
 	if err != nil {
 
@@ -91,26 +85,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("SUCCESS: User has been registered\n"))
 
-func isValidEmail(email string) bool {
-	regex := `^[A-Za-z0-9\._%+\-]+@[A-Za-z0-9\.\-]+\.[A-Za-z]{2,}$`
-	re := regexp.MustCompile(regex)
-	return re.MatchString(email)
-}
-
-func isValidPassword(password string) bool {
-
-	isValid := true
-
-	uppercase := regexp.MustCompile(`[A-Z]`)
-	number := regexp.MustCompile(`[0-9]`)
-	specialChar := regexp.MustCompile(`[!@#$%^&*(),.?":{}|<>]`)
-
-	// Check password conditions
-	if len(password) < 8 || !uppercase.MatchString(password) || !number.MatchString(password) || !specialChar.MatchString(password) {
-		isValid = false
-	}
-
-	return isValid
 }
