@@ -131,18 +131,33 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//System Prompt That Can Change.
-	const SystemPrompt = `You are a car information summary assistant named CarLens. 
+	const SystemPrompt = `You are a car information assistant named CarLens. 
 							Your capabilities:
-							1. Analyze used car listings using provided URLs(The URL information will be provided) or manually entered data
-							2. Compare target vehicle with other used cars of the same model
-							3. Provide buying advice including:
-							- Price fairness assessment (fair/overpriced/undervalued)
-							- Recall history analysis
-							- Reliability rating (1-5 scale)
-							4. Response requirements:
-							- Use English exclusively
-							- Keep responses concise (under 200 words)
-							- Present key points in bullet format`
+							1. Analyze used car listings using provided URLs or manually entered data.
+							2. Extract relevant car details and respond in JSON format:
+							{
+							"source": "<value>",
+							"title": "<value>",
+							"price": "<value>",
+							"dealer": "<value>",
+							"dealer_rating": "<value>",
+							"odometer": "<value>",
+							"transmission": "<value>",
+							"drivetrain": "<value>",
+							"descr": "<value>",
+							"specifications": "<value>",
+							"creation_date": "<value>",
+							"free_carfax": "<value>",
+							"vin": "<value>",
+							"condition": "<value>",
+							"insurance_status": "<value>"
+							"recall_information": "<value>",
+							"listing_summary": "<value>"
+							}
+							- Make sure to return the exact keys as shown above in the response.
+							- Keep responses concise and to the point.
+							- If you cannot find the information for some of these values, leave them null or empty.
+							- Keep the listing_summary short and to the point with a rating of the listing, NOT the car, out of 5 stars to one decimal point.`
 
 	//structure text for AI API
 	openaiReq := OpenAIRequest{
@@ -226,4 +241,92 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 		"response": openaiResp.Choices[0].Message.Content,
 	}
 	json.NewEncoder(w).Encode(response)
+
+}
+
+// Listing Struct
+type Listing struct {
+	ListingID         string `json:"listing_id"`
+	UploadUserUUID    string `json:"upload_user_uuid"`
+	Source            string `json:"source"`
+	Title             string `json:"title"`
+	Price             string `json:"price"`
+	Dealer            string `json:"dealer"`
+	DealerRating      string `json:"dealer_rating"`
+	Odometer          string `json:"odometer"`
+	Transmission      string `json:"transmission"`
+	Drivetrain        string `json:"drivetrain"`
+	Descr             string `json:"descr"`
+	Specifications    string `json:"specifications"`
+	CreationDate      string `json:"creation_date"`
+	FreeCarfax        string `json:"free_carfax"`
+	VIN               string `json:"vin"`
+	Condition         string `json:"condition"`
+	InsuranceStatus   string `json:"insurance_status"`
+	RecallInformation string `json:"recall_information"`
+	ListingSummary    string `json:"listing_summary"`
+}
+
+// Parse the AI response into a Listing struct
+func ParseAIResponseToListing(aiResponse string) (*Listing, error) {
+
+	listing := &Listing{}
+
+	err := json.Unmarshal([]byte(aiResponse), listing)
+	if err != nil {
+		return listing, nil
+	}
+
+	lines := strings.Split(aiResponse, "\n")
+	for _, line := range lines {
+		parts := strings.SplitN(line, ":", 2)
+		if len(parts) != 2 {
+			continue
+		}
+
+		key := strings.TrimSpace(parts[0])
+		value := strings.TrimSpace(parts[1])
+
+		switch strings.ToLower(key) {
+		case "source":
+			listing.Source = value
+		case "title":
+			listing.Title = value
+		case "price":
+			listing.Price = value
+		case "dealer":
+			listing.Dealer = value
+		case "dealer_rating":
+			listing.DealerRating = value
+		case "odometer":
+			listing.Odometer = value
+		case "transmission":
+			listing.Transmission = value
+		case "drivetrain":
+			listing.Drivetrain = value
+		case "descr":
+			listing.Descr = value
+		case "specifications":
+			listing.Specifications = value
+		case "creation_date":
+			listing.CreationDate = value
+		case "free_carfax":
+			listing.FreeCarfax = value
+		case "vin":
+			listing.VIN = value
+		case "condition":
+			listing.Condition = value
+		case "insurance_status":
+			listing.InsuranceStatus = value
+		case "recall_information":
+			listing.RecallInformation = value
+		case "listing_summary":
+			listing.ListingSummary = value
+		default:
+			fmt.Printf("Unknown key: %s\n", key)
+		}
+
+	}
+
+	return listing, nil
 }
