@@ -2,28 +2,30 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Menu } from "lucide-react";
 
 interface NavbarProps {
   isGuestMode?: boolean;
 }
 
 export default function Navbar({ isGuestMode = false }: NavbarProps) {
-  // In a real app, you'd get user info from a session
   const [user] = useState(isGuestMode ? null : {
     name: "Demo User",
     email: "user@example.com",
     avatarUrl: ""
   });
+  
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const getInitials = (name: string) => {
     return name
@@ -33,10 +35,8 @@ export default function Navbar({ isGuestMode = false }: NavbarProps) {
       .toUpperCase();
   };
 
-  // Mock logout function
   const handleLogout = () => {
     console.log("Logging out...");
-    // In real app: signOut() or similar auth function
     window.location.href = "/";
   };
 
@@ -44,14 +44,18 @@ export default function Navbar({ isGuestMode = false }: NavbarProps) {
     <header className="border-b bg-white">
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
         <div className="flex items-center">
-          <Link href="/" className="font-bold text-2xl">
-            CarLens
+          <Link href="/" className="flex items-center">
+            <div className="px-3 py-1 border-2 border-blue-500 rounded-lg">
+              <span className="font-bold text-xl sm:text-2xl">Car<span className="text-blue-500">Lens</span></span>
+            </div>
           </Link>
           {isGuestMode && (
             <span className="ml-2 bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full">
               Guest
             </span>
           )}
+          
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex ml-8 space-x-6">
             <Link href="/dashboard" className="text-slate-600 hover:text-slate-900">
               Dashboard
@@ -61,13 +65,21 @@ export default function Navbar({ isGuestMode = false }: NavbarProps) {
                 History
               </Link>
             )}
-            <Link href="/" className="text-slate-600 hover:text-slate-900">
+            <Link href="/help" className="text-slate-600 hover:text-slate-900">
               Help
             </Link>
           </nav>
         </div>
-
-        <div className="flex items-center">
+        
+        {/* Mobile Menu Button */}
+        <div className="flex items-center md:hidden">
+          <Button variant="ghost" size="sm" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <Menu className="h-6 w-6" />
+          </Button>
+        </div>
+        
+        {/* Desktop User Menu or Sign In/Register Buttons */}
+        <div className="hidden md:flex items-center">
           {isGuestMode ? (
             <div className="space-x-2">
               <Link href="/login">
@@ -108,6 +120,58 @@ export default function Navbar({ isGuestMode = false }: NavbarProps) {
           )}
         </div>
       </div>
+      
+      {/* Mobile Navigation Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-gray-200 bg-white">
+          <div className="container mx-auto px-4 py-3 space-y-2">
+            <Link href="/dashboard" className="block py-2 text-slate-600 hover:text-slate-900">
+              Dashboard
+            </Link>
+            {!isGuestMode && (
+              <Link href="/history" className="block py-2 text-slate-600 hover:text-slate-900">
+                History
+              </Link>
+            )}
+            <Link href="/help" className="block py-2 text-slate-600 hover:text-slate-900">
+              Help
+            </Link>
+            
+            <div className="pt-3 border-t border-gray-100">
+              {isGuestMode ? (
+                <div className="flex flex-col space-y-2">
+                  <Link href="/login">
+                    <Button variant="ghost" className="w-full justify-start" size="sm">Sign In</Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button className="w-full" size="sm">Create Account</Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="flex flex-col space-y-2">
+                  <Link href="/profile">
+                    <Button variant="ghost" className="w-full justify-start" size="sm">Profile</Button>
+                  </Link>
+                  <Link href="/settings">
+                    <Button variant="ghost" className="w-full justify-start" size="sm">Settings</Button>
+                  </Link>
+                  <Link href="/history">
+                    <Button variant="ghost" className="w-full justify-start" size="sm">Estimate History</Button>
+                  </Link>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50" 
+                    size="sm"
+                    onClick={handleLogout}
+                  >
+                    Log out
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

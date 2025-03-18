@@ -1,36 +1,73 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Menu, X } from "lucide-react";
+import { useState } from "react";
 
 export default function Home() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
       <div className="flex-1">
-        <header className="container mx-auto p-6 flex justify-between items-center">
-          <div className="font-bold text-2xl">CarLens</div>
-          <nav className="space-x-6">
+        <header className="container mx-auto p-4 sm:p-6 flex justify-between items-center">
+          <div className="px-3 py-1 border-2 border-blue-500 rounded-lg">
+            <span className="font-bold text-xl sm:text-2xl">Car<span className="text-blue-500">Lens</span></span>
+          </div>
+          
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-6">
             <Link href="#features" className="hover:text-slate-600">Features</Link>
             <Link href="#how-it-works" className="hover:text-slate-600">How It Works</Link>
             <Link href="/login" className="hover:text-slate-600">Login</Link>
             <Link href="/register">
-              <Button className="hover:cursor-pointer">Sign Up</Button>
+              <Button className="h-9">Sign Up</Button>
             </Link>
           </nav>
+          
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
+            <Button variant="ghost" size="sm" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
+          </div>
         </header>
 
-        <section className="container mx-auto px-6 py-16 flex flex-col items-center text-center">
-          <h1 className="text-5xl font-bold tracking-tight mb-6">
+        {/* Mobile Navigation Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-b border-gray-200 bg-white mb-4">
+            <div className="container mx-auto px-4 py-3 space-y-3">
+              <Link href="#features" className="block py-2 text-slate-600 hover:text-slate-900">
+                Features
+              </Link>
+              <Link href="#how-it-works" className="block py-2 text-slate-600 hover:text-slate-900">
+                How It Works
+              </Link>
+              <Link href="/login" className="block py-2 text-slate-600 hover:text-slate-900">
+                Login
+              </Link>
+              <Link href="/register" className="block py-3">
+                <Button className="w-full">Sign Up</Button>
+              </Link>
+            </div>
+          </div>
+        )}
+
+        <section className="container mx-auto px-4 sm:px-6 py-8 sm:py-16 text-center">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4 sm:mb-6">
             Get Accurate Car Price Estimates Instantly
           </h1>
-          <p className="text-xl text-slate-600 max-w-3xl mb-10">
+          <p className="text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto mb-6 sm:mb-10">
             CarLens uses AI to analyze car listings and provide you with the most accurate price estimates. No more overpaying or underselling.
           </p>
-          <div className="flex gap-4">
-            <Link href="/register">
-              <Button size="lg" className="hover:cursor-pointer">Get Started</Button>
+          <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+            <Link href="/register" className="w-full sm:w-auto">
+              <Button size="lg" className="w-full sm:w-auto">Get Started</Button>
             </Link>
-            <Link href="/dashboard?guest=true">
-              <Button variant="outline" size="lg" className="hover:cursor-pointer">Continue as Guest</Button>
+            <Link href="/dashboard?guest=true" className="w-full sm:w-auto">
+              <Button variant="outline" size="lg" className="w-full sm:w-auto">Continue as Guest</Button>
             </Link>
           </div>
           <div className="mt-4">
@@ -42,10 +79,10 @@ export default function Home() {
       </div>
 
       {/* Features Section */}
-      <section id="features" className="bg-slate-50 py-16">
-        <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-12">Key Features</h2>
-          <div className="grid md:grid-cols-3 gap-8">
+      <section id="features" className="bg-slate-50 py-12 sm:py-16">
+        <div className="container mx-auto px-4 sm:px-6">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12">Key Features</h2>
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
@@ -83,7 +120,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-semibold mb-2">Manual Entry</h3>
               <p className="text-slate-600">
-                Dont have a URL? Enter car details manually to get a price estimate.
+                Don&apos;t have a URL? Enter car details manually to get a price estimate.
               </p>
             </div>
           </div>
@@ -91,10 +128,10 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-16">
-        <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
-          <div className="grid md:grid-cols-3 gap-8">
+      <section id="how-it-works" className="py-12 sm:py-16">
+        <div className="container mx-auto px-4 sm:px-6">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12">How It Works</h2>
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-blue-600 text-2xl font-bold">1</span>
@@ -127,45 +164,14 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-slate-900 text-white py-12">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between">
-            <div className="mb-8 md:mb-0">
-              <div className="font-bold text-2xl mb-4">CarLens</div>
-              <p className="text-slate-400 max-w-md">
-                The most accurate car price estimation tool powered by AI.
-              </p>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
-              <div>
-                <h3 className="font-semibold mb-4">Product</h3>
-                <ul className="space-y-2">
-                  <li><Link href="#features" className="text-slate-400 hover:text-white">Features</Link></li>
-                  <li><Link href="#how-it-works" className="text-slate-400 hover:text-white">How It Works</Link></li>
-                  <li><Link href="#" className="text-slate-400 hover:text-white">Pricing</Link></li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-4">Company</h3>
-                <ul className="space-y-2">
-                  <li><Link href="#" className="text-slate-400 hover:text-white">About</Link></li>
-                  <li><Link href="#" className="text-slate-400 hover:text-white">Blog</Link></li>
-                  <li><Link href="#" className="text-slate-400 hover:text-white">Careers</Link></li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-4">Legal</h3>
-                <ul className="space-y-2">
-                  <li><Link href="#" className="text-slate-400 hover:text-white">Privacy</Link></li>
-                  <li><Link href="#" className="text-slate-400 hover:text-white">Terms</Link></li>
-                  <li><Link href="#" className="text-slate-400 hover:text-white">Cookies</Link></li>
-                </ul>
-              </div>
-            </div>
+      <footer className="bg-slate-900 text-white py-8">
+        <div className="container mx-auto px-4 sm:px-6 text-center">
+          <div className="inline-block mx-auto mb-4 px-3 py-1 border-2 border-blue-500 rounded-lg">
+            <span className="font-bold text-xl sm:text-2xl">Car<span className="text-blue-400">Lens</span></span>
           </div>
-          <div className="border-t border-slate-800 mt-12 pt-8 text-center text-slate-400">
-            <p>&copy; {new Date().getFullYear()} CarLens. All rights reserved.</p>
-          </div>
+          <p className="text-slate-400">
+            &copy; {new Date().getFullYear()} CarLens. All rights reserved.
+          </p>
         </div>
       </footer>
     </div>

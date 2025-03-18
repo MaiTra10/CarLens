@@ -55,16 +55,16 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-slate-50">
       <Navbar isGuestMode={isGuestMode} />
       
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto py-6 sm:py-8 px-4">
         {isGuestMode && (
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-8">
-            <h2 className="text-amber-800 font-medium flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 sm:mb-8">
+            <h2 className="text-amber-800 font-medium flex items-center text-sm sm:text-base">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
               </svg>
               Guest Mode
             </h2>
-            <p className="text-amber-700 mt-1">
+            <p className="text-amber-700 mt-1 text-sm sm:text-base">
               Youre using CarLens as a guest. Your search history wont be saved.{" "}
               <Link href="/register" className="font-medium underline">
                 Create an account
@@ -74,11 +74,11 @@ export default function DashboardPage() {
           </div>
         )}
       
-        <h1 className="text-3xl font-bold mb-8">Car Price Estimator</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Car Price Estimator</h1>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Estimation Form */}
-          <div className="md:col-span-2">
+          <div className="lg:col-span-2">
             <Card>
               <CardHeader>
                 <CardTitle>Get Car Price Estimate</CardTitle>
@@ -97,7 +97,7 @@ export default function DashboardPage() {
           </div>
           
           {/* Estimate History or Current Estimate */}
-          <div className="md:col-span-1">
+          <div className="lg:col-span-1">
             <Card>
               <CardHeader>
                 <CardTitle>
@@ -117,12 +117,12 @@ export default function DashboardPage() {
                 <CardFooter>
                   <div className="w-full text-center">
                     <p className="text-sm text-slate-500 mb-2">Want to save your search history?</p>
-                    <div className="flex gap-2 justify-center">
-                      <Link href="/register">
-                        <Button size="sm">Create Account</Button>
+                    <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                      <Link href="/register" className="w-full sm:w-auto">
+                        <Button size="sm" className="w-full">Create Account</Button>
                       </Link>
-                      <Link href="/login">
-                        <Button variant="outline" size="sm">Sign In</Button>
+                      <Link href="/login" className="w-full sm:w-auto">
+                        <Button variant="outline" size="sm" className="w-full">Sign In</Button>
                       </Link>
                     </div>
                   </div>

@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Link2, ClipboardList } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import type { Estimate } from "@/app/dashboard/page";
 
 // Generate a random ID for demo purposes
@@ -33,11 +33,11 @@ export function ClientCarForms({ activeTab, setActiveTab, onNewEstimate }: Clien
         <TabsTrigger value="url">From URL</TabsTrigger>
         <TabsTrigger value="manual">Manual Entry</TabsTrigger>
       </TabsList>
-
+      
       <TabsContent value="url">
         <UrlForm onSubmit={onNewEstimate} />
       </TabsContent>
-
+      
       <TabsContent value="manual">
         <ManualForm onSubmit={onNewEstimate} />
       </TabsContent>
@@ -117,7 +117,7 @@ function UrlForm({ onSubmit }: UrlFormProps) {
           </p>
         </div>
 
-        <Button type="submit" disabled={isLoading} className="w-full hover:cursor-pointer">
+        <Button type="submit" disabled={isLoading} className="w-full">
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -201,16 +201,16 @@ function ManualForm({ onSubmit }: ManualFormProps) {
       const year = parseInt(formData.year);
       const mileage = parseInt(formData.mileage);
       const currentYear = new Date().getFullYear();
-
+      
       // Very simple mock algorithm for demo purposes
       const basePrice = 30000;
       const yearFactor = (currentYear - year) * 1000;
       const mileageFactor = mileage * 0.05;
-      const conditionFactor =
+      const conditionFactor = 
         formData.condition === "excellent" ? 2000 :
-          formData.condition === "good" ? 0 :
-            formData.condition === "fair" ? -2000 : -4000;
-
+        formData.condition === "good" ? 0 :
+        formData.condition === "fair" ? -2000 : -4000;
+      
       const mockPrice = Math.max(5000, basePrice - yearFactor - mileageFactor + conditionFactor);
 
       const mockEstimate: Estimate = {
@@ -337,7 +337,7 @@ function ManualForm({ onSubmit }: ManualFormProps) {
           />
         </div>
 
-        <Button type="submit" disabled={isLoading} className="w-full hover:cursor-pointer">
+        <Button type="submit" disabled={isLoading} className="w-full">
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -361,7 +361,7 @@ function ManualForm({ onSubmit }: ManualFormProps) {
             </p>
             <p>
               <span className="font-semibold">Condition:</span>{" "}
-              {result.condition
+              {result.condition 
                 ? result.condition.charAt(0).toUpperCase() + result.condition.slice(1)
                 : "Not specified"}
             </p>
