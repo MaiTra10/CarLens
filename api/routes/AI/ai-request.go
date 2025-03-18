@@ -206,6 +206,9 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 
 	//Read response
 	body, _ := io.ReadAll(resp.Body)
+
+	ParseAIResponseToListing(string(body))
+
 	fmt.Println("Debug: Get Reply From AI Successfully.")
 
 	//Handling not 200 responses
@@ -268,65 +271,53 @@ type Listing struct {
 }
 
 // Parse the AI response into a Listing struct
-func ParseAIResponseToListing(aiResponse string) (*Listing, error) {
+func parseAIResponseToListing(aiResponse string) (Listing, error) {
+	var listingDetails map[string]interface{}
 
-	listing := &Listing{}
-
-	err := json.Unmarshal([]byte(aiResponse), listing)
+	err := json.Unmarshal([]byte(aiResponse), &listingDetails)
 	if err != nil {
-		return listing, nil
+		return Listing{}, fmt.Errorf("failed to parse AI response: %v", err)
 	}
 
-	lines := strings.Split(aiResponse, "\n")
-	for _, line := range lines {
-		parts := strings.SplitN(line, ":", 2)
-		if len(parts) != 2 {
-			continue
-		}
-
-		key := strings.TrimSpace(parts[0])
-		value := strings.TrimSpace(parts[1])
-
-		switch strings.ToLower(key) {
-		case "source":
-			listing.Source = value
-		case "title":
-			listing.Title = value
-		case "price":
-			listing.Price = value
-		case "dealer":
-			listing.Dealer = value
-		case "dealer_rating":
-			listing.DealerRating = value
-		case "odometer":
-			listing.Odometer = value
-		case "transmission":
-			listing.Transmission = value
-		case "drivetrain":
-			listing.Drivetrain = value
-		case "descr":
-			listing.Descr = value
-		case "specifications":
-			listing.Specifications = value
-		case "creation_date":
-			listing.CreationDate = value
-		case "free_carfax":
-			listing.FreeCarfax = value
-		case "vin":
-			listing.VIN = value
-		case "condition":
-			listing.Condition = value
-		case "insurance_status":
-			listing.InsuranceStatus = value
-		case "recall_information":
-			listing.RecallInformation = value
-		case "listing_summary":
-			listing.ListingSummary = value
-		default:
-			fmt.Printf("Unknown key: %s\n", key)
-		}
-
+	listing := Listing{
+		UploadUserUUID:    extractString(listingDetails["upload_user_uuid"]),
+		Source:            extractString(listingDetails["source"]),
+		Title:             extractString(listingDetails["title"]),
+		Price:             extractString(listingDetails["price"]),
+		Dealer:            extractString(listingDetails["dealer"]),
+		DealerRating:      extractString(listingDetails["dealer_rating"]),
+		Odometer:          extractString(listingDetails["odometer"]),
+		Transmission:      extractString(listingDetails["transmission"]),
+		Drivetrain:        extractString(listingDetails["drivetrain"]),
+		Descr:             extractString(listingDetails["descr"]),
+		Specifications:    extractString(listingDetails["specifications"]),
+		FreeCarfax:        extractString(listingDetails["free_carfax"]),
+		VIN:               extractString(listingDetails["vin"]),
+		Condition:         extractString(listingDetails["condition"]),
+		InsuranceStatus:   extractString(listingDetails["insurance_status"]),
+		RecallInformation: extractString(listingDetails["recall_information"]),
+		ListingSummary:    extractString(listingDetails["listing_summary"]),
 	}
 
 	return listing, nil
+}
+
+func extractString(value interface{}) string {
+	if str, ok := value.(string); ok {
+		return str
+	}
+	return ""
+}
+
+func extractStringArray(value interface{}) []string {
+	if arr, ok := value.([]interface{}); ok {
+		var result []string
+		for _, v := range arr {
+			if str, ok := v.(string); ok {
+				result = append(result, str)
+			}
+		}
+		return result
+	}
+	return []string{}
 }
