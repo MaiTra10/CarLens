@@ -259,6 +259,7 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error:", err)
 		return
 	}
+	fmt.Println("\n__________________________________________\n", listing)
 	sendResponseToDatabase(listing)
 
 	json.NewEncoder(w).Encode(response)
@@ -368,6 +369,6 @@ func sendResponseToDatabase(response *Listing) bool {
 
 	supabase := internal.GetSupabaseClient()
 	var listingResult []Listing
-	err := supabase.DB.From("users").Insert(response).Execute(&listingResult)
+	err := supabase.DB.From("listings").Insert(*response).Execute(&listingResult)
 	return err != nil
 }
