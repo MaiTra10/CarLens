@@ -197,20 +197,20 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 	req.Header.Set("Authorization", "Bearer "+apiKey)
 	req.Header.Set("Content-Type", "application/json")
 
-	//Send request
+	// Send request
 	resp, err := client.Do(req)
 	if err != nil {
 		http.Error(w, `{"error": "Failed to contact AI service"}`, http.StatusInternalServerError)
 		return
 	}
 	defer resp.Body.Close()
-	fmt.Println("Debug: Send Request to AI Successfully.")
+	fmt.Println("Debug: Sent Request to AI Successfully.")
 
-	//Read response
+	// Read response
 	body, _ := io.ReadAll(resp.Body)
-	fmt.Println("Debug: Get Reply From AI Successfully.")
+	fmt.Println("Debug: Received Reply From AI Successfully.")
 
-	//Handling not 200 responses
+	// Handling non-200 responses
 	if resp.StatusCode != http.StatusOK {
 		var errorResp struct {
 			Error struct {
@@ -218,43 +218,47 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 			} `json:"error"`
 		}
 		if err := json.Unmarshal(body, &errorResp); err != nil {
-			http.Error(w, `{"error": "Unknown API error, probably because the free access token has run out :("}`, resp.StatusCode)
+			http.Error(w, `{"error": "Unknown API error, possibly due to an expired free access token."}`, resp.StatusCode)
 			return
 		}
 		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, errorResp.Error.Message), resp.StatusCode)
 		return
 	}
 
-	//handle response that succeed.
+	// Handle successful response
 	var openaiResp OpenAIResponse
 	if err := json.Unmarshal(body, &openaiResp); err != nil {
 		http.Error(w, `{"error": "Failed to parse AI response"}`, http.StatusInternalServerError)
 		return
 	}
 
-	//If Response from AI is failed.
+	// Check if AI returned a valid response
 	if len(openaiResp.Choices) == 0 {
 		http.Error(w, `{"error": "No response from AI"}`, http.StatusInternalServerError)
 		return
 	}
 
-	//Handle and return.
-	response := map[string]string{
-		"response": openaiResp.Choices[0].Message.Content,
-	}
+	// Extract the AI response
+	jsonString := openaiResp.Choices[0].Message.Content
 
-	fmt.Println(response)
-	var parsedResponse *Listing
-	parsedResponse, err = ParseAIResponseToListing(string(body))
+	// Parse the AI response into a Listing
+	var parsedResponse Listing
+	parsedResponse, err = parseAIResponseToListing(jsonString)
 	if err != nil {
 		http.Error(w, `{"error": "Failed to parse AI response"}`, http.StatusInternalServerError)
 		return
 	}
 	fmt.Println("__________________________________")
 	fmt.Println(parsedResponse)
+
+	// Send parsed response to the database
 	sendResponseToDatabase(parsedResponse)
 
-	json.NewEncoder(w).Encode(response)
+	// Return response to the user
+	json.NewEncoder(w).Encode(map[string]string{
+		"message":  "AI response processed successfully",
+		"response": jsonString,
+	})
 
 }
 
@@ -282,70 +286,45 @@ type Listing struct {
 }
 
 // Parse the AI response into a Listing struct
-func ParseAIResponseToListing(aiResponse string) (*Listing, error) {
+func parseAIResponseToListing(aiResponse string) (Listing, error) {
+	var listingDetails map[string]interface{}
 
-	listing := &Listing{}
-
-	err := json.Unmarshal([]byte(aiResponse), listing)
+	err := json.Unmarshal([]byte(aiResponse), &listingDetails)
 	if err != nil {
-		return listing, nil
+		return Listing{}, fmt.Errorf("failed to parse AI response: %v", err)
 	}
 
-	lines := strings.Split(aiResponse, "\n")
-	for _, line := range lines {
-		parts := strings.SplitN(line, ":", 2)
-		if len(parts) != 2 {
-			continue
-		}
-
-		key := strings.TrimSpace(parts[0])
-		value := strings.TrimSpace(parts[1])
-
-		switch strings.ToLower(key) {
-		case "source":
-			listing.Source = value
-		case "title":
-			listing.Title = value
-		case "price":
-			listing.Price = value
-		case "dealer":
-			listing.Dealer = value
-		case "dealer_rating":
-			listing.DealerRating = value
-		case "odometer":
-			listing.Odometer = value
-		case "transmission":
-			listing.Transmission = value
-		case "drivetrain":
-			listing.Drivetrain = value
-		case "descr":
-			listing.Descr = value
-		case "specifications":
-			listing.Specifications = value
-		case "creation_date":
-			listing.CreationDate = value
-		case "free_carfax":
-			listing.FreeCarfax = value
-		case "vin":
-			listing.VIN = value
-		case "condition":
-			listing.Condition = value
-		case "insurance_status":
-			listing.InsuranceStatus = value
-		case "recall_information":
-			listing.RecallInformation = value
-		case "listing_summary":
-			listing.ListingSummary = value
-		default:
-			fmt.Printf("Unknown key: %s\n", key)
-		}
-
+	listing := Listing{
+		UploadUserUUID:    extractString(listingDetails["upload_user_uuid"]),
+		Source:            extractString(listingDetails["source"]),
+		Title:             extractString(listingDetails["title"]),
+		Price:             extractString(listingDetails["price"]),
+		Dealer:            extractString(listingDetails["dealer"]),
+		DealerRating:      extractString(listingDetails["dealer_rating"]),
+		Odometer:          extractString(listingDetails["odometer"]),
+		Transmission:      extractString(listingDetails["transmission"]),
+		Drivetrain:        extractString(listingDetails["drivetrain"]),
+		Descr:             extractString(listingDetails["descr"]),
+		Specifications:    extractString(listingDetails["specifications"]),
+		FreeCarfax:        extractString(listingDetails["free_carfax"]),
+		VIN:               extractString(listingDetails["vin"]),
+		Condition:         extractString(listingDetails["condition"]),
+		InsuranceStatus:   extractString(listingDetails["insurance_status"]),
+		RecallInformation: extractString(listingDetails["recall_information"]),
+		ListingSummary:    extractString(listingDetails["listing_summary"]),
 	}
 
 	return listing, nil
 }
 
-func sendResponseToDatabase(response *Listing) bool {
+func extractString(value interface{}) string {
+	if str, ok := value.(string); ok {
+		return str
+	}
+	return ""
+}
+
+func sendResponseToDatabase(response Listing) bool {
 
 	supabase := internal.GetSupabaseClient()
 	var listingResult []Listing
