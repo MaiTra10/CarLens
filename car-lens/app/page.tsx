@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import AnimatedLogo from "@/components/logos/animated-logo";
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -13,9 +14,7 @@ export default function Home() {
       {/* Hero Section */}
       <div className="flex-1">
         <header className="container mx-auto p-4 sm:p-6 flex justify-between items-center">
-          <div className="px-3 py-1 border-2 border-blue-500 rounded-lg">
-            <span className="font-bold text-xl sm:text-2xl">Car<span className="text-blue-500">Lens</span></span>
-          </div>
+        <AnimatedLogo />
           
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">

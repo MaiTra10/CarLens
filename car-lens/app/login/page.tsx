@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import AnimatedLogo from "@/components/logos/animated-logo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -41,9 +42,7 @@ export default function LoginPage() {
         <CardHeader className="space-y-2">
           <div className="text-center mb-4">
             <Link href="/" className="inline-block">
-              <div className="px-3 py-1 border-2 border-blue-500 rounded-lg inline-block">
-                <span className="font-bold text-xl sm:text-2xl">Car<span className="text-blue-500">Lens</span></span>
-              </div>
+              <AnimatedLogo />
             </Link>
           </div>
           <CardTitle className="text-2xl font-bold text-center">Welcome back</CardTitle>

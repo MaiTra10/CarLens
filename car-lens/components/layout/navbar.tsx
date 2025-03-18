@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Menu } from "lucide-react";
+import AnimatedLogo from "../logos/animated-logo";
 
 interface NavbarProps {
   isGuestMode?: boolean;
@@ -45,9 +46,7 @@ export default function Navbar({ isGuestMode = false }: NavbarProps) {
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
         <div className="flex items-center">
           <Link href="/" className="flex items-center">
-            <div className="px-3 py-1 border-2 border-blue-500 rounded-lg">
-              <span className="font-bold text-xl sm:text-2xl">Car<span className="text-blue-500">Lens</span></span>
-            </div>
+            <AnimatedLogo />
           </Link>
           {isGuestMode && (
             <span className="ml-2 bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full">
