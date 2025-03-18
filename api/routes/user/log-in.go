@@ -34,15 +34,15 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	supabase := internal.GetSupabaseClient()
 
-	fmt.Println("skibidi")
-	var userResult map[string]interface{}
-	err = supabase.DB.From("users").Select("user_uuid").Single().Eq("email", LoginParams.Email).Execute(&userResult)
+	var userResults map[string]interface{}
+	// var userResults string
+	err = supabase.DB.From("users").Select("user_uuid").Single().Filter("email", "eq", LoginParams.Email).Execute(&userResults)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-
-	fmt.Println(userResult)
+	fmt.Println(LoginParams.Email)
+	fmt.Println(userResults)
 
 	// var hash map[string]interface{}
 	// err = supabase.DB.From("passwords").Select("hash").Single().Eq("user_uuid", userResult).Execute(&hash)
