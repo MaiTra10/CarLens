@@ -260,6 +260,7 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Println("\n__________________________________________\n", listing)
+	fmt.Printf("Type of listing: %T\n", listing)
 	sendResponseToDatabase(listing)
 
 	json.NewEncoder(w).Encode(response)
@@ -366,9 +367,18 @@ func cleanPrice(price string) string {
 }
 
 func sendResponseToDatabase(response *Listing) bool {
+	fmt.Println("Sending Listing to database...")
 
+	// Initialize the Supabase client
 	supabase := internal.GetSupabaseClient()
+	// Insert the response (which is a single Listing) into the database
 	var listingResult []Listing
-	err := supabase.DB.From("listings").Insert(*response).Execute(&listingResult)
-	return err != nil
+	err := supabase.DB.From("listings").Insert([]Listing{*response}).Execute(&listingResult)
+	// Check if there was an error during insertion
+	if err != nil {
+		fmt.Println("Error inserting listing:", err)
+		return false
+	}
+	// Return true if the insertion was successful
+	return true
 }
