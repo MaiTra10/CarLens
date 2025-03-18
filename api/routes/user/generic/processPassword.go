@@ -65,13 +65,13 @@ func ProcessPassword(password string, userUUID string) (PasswordHashData, error)
 func ComparePassword(password string, storedHash string, storedSalt string) bool {
 
 	// Decode the stored salt and hash
-	salt, err := base64.StdEncoding.DecodeString(storedSalt)
+	salt, err := base64.RawStdEncoding.DecodeString(storedSalt)
 	if err != nil {
 		// something went wrong with decoding salt
 		return false
 	}
 
-	hash, err := base64.StdEncoding.DecodeString(storedHash)
+	hash, err := base64.RawStdEncoding.DecodeString(storedHash)
 	if err != nil {
 		// something went wrong with decoding hash
 		return false
