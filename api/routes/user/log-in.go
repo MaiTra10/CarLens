@@ -2,7 +2,6 @@ package user
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/MaiTra10/CarLens/api/internal"
@@ -36,14 +35,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var userResult map[string]interface{}
 	err = supabase.DB.From("users").Select("user_uuid").Single().Filter("email", "eq", userEmail).Execute(&userResult)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
+		http.Error(w, "Error: Invalid email or password", http.StatusUnauthorized)
 		return
 	}
 
 	uuid, _ := userResult["user_uuid"].(string)
-
-	fmt.Println(userEmail)
-	fmt.Println(uuid)
 
 	var hashResult map[string]interface{}
 	err = supabase.DB.From("passwords").Select("hash").Single().Filter("user_uuid", "eq", uuid).Execute(&hashResult)
