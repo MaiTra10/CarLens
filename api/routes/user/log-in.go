@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/MaiTra10/CarLens/api/internal"
+	"github.com/MaiTra10/CarLens/api/routes/user/generic"
 )
 
 type LoginParameters struct {
@@ -41,26 +42,33 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
+
+	uuid, _ := userResults["user_uuid"].(string)
+
 	fmt.Println(LoginParams.Email)
-	fmt.Println(userResults)
+	fmt.Println(uuid)
 
-	// var hash map[string]interface{}
-	// err = supabase.DB.From("passwords").Select("hash").Single().Eq("user_uuid", userResult).Execute(&hash)
-	// if err != nil {
-	// 	http.Error(w, "toilet", http.StatusUnauthorized)
-	// 	return
-	// }
+	var hashResult map[string]interface{}
+	err = supabase.DB.From("passwords").Select("hash").Single().Filter("user_uuid", "eq", uuid).Execute(&hashResult)
+	if err != nil {
+		http.Error(w, "toilet", http.StatusUnauthorized)
+		return
+	}
 
-	// var salt map[string]interface{}
-	// err = supabase.DB.From("passwords").Select("salt").Single().Eq("user_uuid", userResult).Execute(&salt)
-	// if err != nil {
-	// 	http.Error(w, "skibidi", http.StatusUnauthorized)
-	// 	return
-	// }
+	hash, _ := hashResult["hash"].(string)
 
-	// if !generic.ComparePassword(LoginParams.Password, hash, salt) {
-	// 	http.Error(w, "Invalid password or something", http.StatusUnauthorized)
-	// 	return
-	// }
+	var saltResult map[string]interface{}
+	err = supabase.DB.From("passwords").Select("salt").Single().Filter("user_uuid", "eq", uuid).Execute(&saltResult)
+	if err != nil {
+		http.Error(w, "skibidi", http.StatusUnauthorized)
+		return
+	}
+
+	salt, _ := saltResult["salt"].(string)
+
+	if !generic.ComparePassword(LoginParams.Password, hash, salt) {
+		http.Error(w, "Invalid password or something", http.StatusUnauthorized)
+		return
+	}
 
 }
