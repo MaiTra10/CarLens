@@ -65,7 +65,7 @@ export default function DashboardPage() {
               Guest Mode
             </h2>
             <p className="text-amber-700 mt-1 text-sm sm:text-base">
-              Youre using CarLens as a guest. Your search history wont be saved.{" "}
+              You&apos;re using CarLens as a guest. Your search history won&apos;t be saved.{" "}
               <Link href="/register" className="font-medium underline">
                 Create an account
               </Link>{" "}
