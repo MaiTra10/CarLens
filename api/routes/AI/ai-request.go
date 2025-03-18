@@ -9,6 +9,8 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
+
+	"github.com/MaiTra10/CarLens/api/internal"
 )
 
 // Structs
@@ -240,6 +242,18 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 	response := map[string]string{
 		"response": openaiResp.Choices[0].Message.Content,
 	}
+
+	fmt.Println(response)
+	var parsedResponse *Listing
+	parsedResponse, err = ParseAIResponseToListing(string(body))
+	if err != nil {
+		http.Error(w, `{"error": "Failed to parse AI response"}`, http.StatusInternalServerError)
+		return
+	}
+	fmt.Println("__________________________________")
+	fmt.Println(parsedResponse)
+	sendResponseToDatabase(parsedResponse)
+
 	json.NewEncoder(w).Encode(response)
 
 }
@@ -329,4 +343,12 @@ func ParseAIResponseToListing(aiResponse string) (*Listing, error) {
 	}
 
 	return listing, nil
+}
+
+func sendResponseToDatabase(response *Listing) bool {
+
+	supabase := internal.GetSupabaseClient()
+	var listingResult []Listing
+	err := supabase.DB.From("users").Insert(response).Execute(&listingResult)
+	return err != nil
 }
