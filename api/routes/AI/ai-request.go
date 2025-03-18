@@ -9,6 +9,9 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
+
+	"github.com/MaiTra10/CarLens/api/internal"
+	"github.com/MaiTra10/CarLens/api/routes/user"
 )
 
 // Structs
@@ -156,8 +159,14 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 							}
 							- Make sure to return the exact keys as shown above in the response.
 							- Keep responses concise and to the point.
-							- If you cannot find the information for some of these values, leave them null or empty.
-							- Keep the listing_summary short and to the point with a rating of the listing, NOT the car, out of 5 stars to one decimal point.`
+							- If you cannot find the information for some of these values, attempt to find data from the description. 
+							- If data is not found on the page, reason possible data using info known about the car model and parts/modifcations mentioned in listing. 
+							- Only leave fields as "unknown" if they absolutely cannot be obtained.
+							- Keep the listing_summary short and to the point with a rating of the listing, NOT the car, out of 5 stars to one decimal point.
+							- drivetrain is whether the car is FWD, RWD, AWD, 4WD.
+							- Always use the highest odometer number listed in posting, assume units are km unless specified. Always Priortize milage data in description
+							- If the odometer is one of the following placeholders: (123 km ,123123 km, 1 km, 0 km), try to find the real milage. Otherwise leave as null
+							- dealer should be either "dealer" if the seller is a company, else mark it as "private sale" if the seller is a person.`
 
 	//structure text for AI API
 	openaiReq := OpenAIRequest{
@@ -243,13 +252,33 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 	response := map[string]string{
 		"response": openaiResp.Choices[0].Message.Content,
 	}
-	json.NewEncoder(w).Encode(response)
 
+	// fmt.Println(response)
+	// fmt.Printf("Type of myMap: %T\n", response)
+	// fmt.Println(response["response"])
+	// fmt.Printf("Type of myMap: %T\n", response["response"])
+	// Parse AI response into a Listing struct
+	// Remove the triple single quotes
+	cleanedJSONString := strings.Trim(response["response"], "'")
+	cleanedJSONString = strings.Trim(cleanedJSONString, "`")
+	cleanedJSONString = strings.Trim(cleanedJSONString, "json")
+	cleanedJSONString = strings.Trim(cleanedJSONString, "\n")
+	fmt.Println(cleanedJSONString)
+	listing, err := ParseAIResponseToListing(cleanedJSONString)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	fmt.Println("\n__________________________________________\n")
+	fmt.Printf("Type of listing: %T\n", listing)
+	fmt.Printf("%+v\n", listing)
+	sendResponseToDatabase(listing)
+
+	json.NewEncoder(w).Encode(response)
 }
 
 // Listing Struct
 type Listing struct {
-	ListingID         string `json:"listing_id"`
 	UploadUserUUID    string `json:"upload_user_uuid"`
 	Source            string `json:"source"`
 	Title             string `json:"title"`
@@ -270,41 +299,98 @@ type Listing struct {
 	ListingSummary    string `json:"listing_summary"`
 }
 
-// Parse the AI response into a Listing struct
-func parseAIResponseToListing(aiResponse string) (Listing, error) {
-	var listingDetails map[string]interface{}
+// ParseAIResponseToListing parses AI response into a Listing struct
+func ParseAIResponseToListing(aiResponse string) (*Listing, error) {
+	listing := &Listing{}
 
-	err := json.Unmarshal([]byte(aiResponse), &listingDetails)
+	// First, try to unmarshal the JSON response into the Listing struct
+	err := json.Unmarshal([]byte(aiResponse), listing)
 	if err != nil {
-		return Listing{}, fmt.Errorf("failed to parse AI response: %v", err)
+		return nil, fmt.Errorf("error unmarshalling JSON: %w", err)
 	}
 
-	listing := Listing{
-		UploadUserUUID:    extractString(listingDetails["upload_user_uuid"]),
-		Source:            extractString(listingDetails["source"]),
-		Title:             extractString(listingDetails["title"]),
-		Price:             extractString(listingDetails["price"]),
-		Dealer:            extractString(listingDetails["dealer"]),
-		DealerRating:      extractString(listingDetails["dealer_rating"]),
-		Odometer:          extractString(listingDetails["odometer"]),
-		Transmission:      extractString(listingDetails["transmission"]),
-		Drivetrain:        extractString(listingDetails["drivetrain"]),
-		Descr:             extractString(listingDetails["descr"]),
-		Specifications:    extractString(listingDetails["specifications"]),
-		FreeCarfax:        extractString(listingDetails["free_carfax"]),
-		VIN:               extractString(listingDetails["vin"]),
-		Condition:         extractString(listingDetails["condition"]),
-		InsuranceStatus:   extractString(listingDetails["insurance_status"]),
-		RecallInformation: extractString(listingDetails["recall_information"]),
-		ListingSummary:    extractString(listingDetails["listing_summary"]),
+	// Handle any string cleanup for fields like price
+	listing.Price = cleanPrice(listing.Price)
+
+	// If the response includes non-JSON structured data, handle that as well
+	lines := strings.Split(aiResponse, "\n")
+	for _, line := range lines {
+		parts := strings.SplitN(line, ":", 2)
+		if len(parts) != 2 {
+			continue
+		}
+
+		key := strings.TrimSpace(parts[0])
+		value := strings.TrimSpace(parts[1])
+
+		// Populate the Listing struct based on the keys
+		switch strings.ToLower(key) {
+		case "source":
+			listing.Source = value
+		case "title":
+			listing.Title = value
+		case "price":
+			listing.Price = cleanPrice(value) // Handle price clean-up
+		case "dealer":
+			listing.Dealer = value
+		case "dealer_rating":
+			listing.DealerRating = value
+		case "odometer":
+			listing.Odometer = value
+		case "transmission":
+			listing.Transmission = value
+		case "drivetrain":
+			listing.Drivetrain = value
+		case "descr":
+			listing.Descr = value
+		case "specifications":
+			listing.Specifications = value
+		case "creation_date":
+			listing.CreationDate = value
+		case "free_carfax":
+			listing.FreeCarfax = value
+		case "vin":
+			listing.VIN = value
+		case "condition":
+			listing.Condition = value
+		case "insurance_status":
+			listing.InsuranceStatus = value
+		case "recall_information":
+			listing.RecallInformation = value
+		case "listing_summary":
+			listing.ListingSummary = value
+		default:
+			// fmt.Printf("Unknown key: %s\n", key)
+		}
 	}
+
+	// Attribute the user to this listing
+	listing.UploadUserUUID = user.GetUserSession()
 
 	return listing, nil
 }
 
-func extractString(value interface{}) string {
-	if str, ok := value.(string); ok {
-		return str
+// cleanPrice removes unwanted characters like $ and commas from the price string
+func cleanPrice(price string) string {
+	// Remove the dollar sign and commas
+	price = strings.ReplaceAll(price, "$", "")
+	price = strings.ReplaceAll(price, ",", "")
+	return price
+}
+
+func sendResponseToDatabase(response *Listing) bool {
+	fmt.Println("Sending Listing to database...")
+
+	// Initialize the Supabase client
+	supabase := internal.GetSupabaseClient()
+	// Insert the response (which is a single Listing) into the database
+	var listingResult []Listing
+	err := supabase.DB.From("listings").Insert([]Listing{*response}).Execute(&listingResult)
+	// Check if there was an error during insertion
+	if err != nil {
+		fmt.Println("Error inserting listing:", err)
+		return false
 	}
-	return ""
+	// Return true if the insertion was successful
+	return true
 }
