@@ -159,8 +159,13 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 							}
 							- Make sure to return the exact keys as shown above in the response.
 							- Keep responses concise and to the point.
-							- If you cannot find the information for some of these values, leave them null or empty.
-							- Keep the listing_summary short and to the point with a rating of the listing, NOT the car, out of 5 stars to one decimal point.`
+							- If you cannot find the information for some of these values, attempt to find data from the description. 
+							- If data is not found on the page, reason possible data using info known about the car model and parts/modifcations mentioned in listing. 
+							- Only leave fields null or empty if they absolutely cannot be obtained.
+							- Keep the listing_summary short and to the point with a rating of the listing, NOT the car, out of 5 stars to one decimal point.
+							- drivetrain is whether the car is FWD, RWD, AWD, 4WD.
+							- Always use the highest odometer number listed in posting, assume units are km unless specified. Always Priortize milage data in description
+							- If the odometer is one of the following placeholders: (123 km ,123123 km, 1 km, 0 km), try to find the real milage. Otherwise leave as null`
 
 	//structure text for AI API
 	openaiReq := OpenAIRequest{
