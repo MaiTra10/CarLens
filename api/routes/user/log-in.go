@@ -31,8 +31,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	supabase := internal.GetSupabaseClient()
 
+	userEmail := LoginParams.Email
+
 	var userResult map[string]interface{}
-	err = supabase.DB.From("users").Select("user_uuid").Single().Filter("email", "eq", LoginParams.Email).Execute(&userResult)
+	err = supabase.DB.From("users").Select("user_uuid").Single().Filter("email", "eq", userEmail).Execute(&userResult)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -40,7 +42,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	uuid, _ := userResult["user_uuid"].(string)
 
-	fmt.Println(LoginParams.Email)
+	fmt.Println(userEmail)
 	fmt.Println(uuid)
 
 	var hashResult map[string]interface{}
@@ -62,6 +64,27 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	passwordMatches := generic.ComparePassword(LoginParams.Password, hash, salt)
 
-	fmt.Println(passwordMatches)
+	if !passwordMatches {
+		http.Error(w, "Error: Invalid email or password", http.StatusUnauthorized)
+		return
+	}
+
+	token, jwtExpiration, err := generic.CreateJWT(userEmail)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "access_token",
+		Value:    token,
+		HttpOnly: true,
+		Secure:   true,
+		Expires:  jwtExpiration,
+		SameSite: http.SameSiteStrictMode,
+	})
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("SUCCESS: User is authenticated\n"))
 
 }
