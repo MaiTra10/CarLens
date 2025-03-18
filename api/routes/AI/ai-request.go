@@ -215,6 +215,9 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 
 	//Read response
 	body, _ := io.ReadAll(resp.Body)
+
+	ParseAIResponseToListing(string(body))
+
 	fmt.Println("Debug: Get Reply From AI Successfully.")
 
 	//Handling not 200 responses
@@ -296,7 +299,6 @@ type Listing struct {
 	ListingSummary    string `json:"listing_summary"`
 }
 
-// Parse the AI response into a Listing struct
 // ParseAIResponseToListing parses AI response into a Listing struct
 func ParseAIResponseToListing(aiResponse string) (*Listing, error) {
 	listing := &Listing{}
