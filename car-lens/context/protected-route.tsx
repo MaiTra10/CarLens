@@ -14,7 +14,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     const verifyAuth = async () => {
       const isAuthed = await checkAuthStatus();
       if (!isAuthed) {
-        router.push("/login");
+        router.push("/");
       }
       setChecked(true);
     };
