@@ -38,6 +38,7 @@ export function CarUrlForm({ onSuccess }: CarUrlFormProps) {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({ message: url }),
       });
 
