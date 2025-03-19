@@ -46,39 +46,18 @@ export function CarUrlForm({ onSuccess }: CarUrlFormProps) {
         throw new Error(errorData.error || "Failed to process URL");
       }
 
-      const data = await response.json();
+      const aiResponse = await response.json();
 
       // Log the raw response for debugging
-      console.log("Raw response:", data);
-      console.log("Response type:", typeof data.response);
-
-      // Try to clean and parse the JSON response
-      let aiResponse;
-      try {
-        // Remove any leading/trailing whitespace and non-JSON characters
-        const cleanedResponse = data.response
-          .trim()
-          .replace(/^[^{]*/, "")
-          .replace(/[^}]*$/, "");
-        aiResponse = JSON.parse(cleanedResponse);
-      } catch (parseError) {
-        console.error("JSON parsing error:", parseError);
-
-        // If parsing fails, try to parse the original response
-        try {
-          aiResponse = JSON.parse(data.response);
-        } catch (fallbackError) {
-          console.error("Fallback parsing error:", fallbackError);
-          throw new Error("Failed to parse AI response");
-        }
-      }
+      console.log("Raw response:", aiResponse);
+      console.log("Response type:", typeof aiResponse);
 
       const estimate: Estimate = {
         id: generateId(),
         makeModel: aiResponse.title || "Unknown Vehicle",
         year: parseInt(
           aiResponse.title?.match(/\d{4}/)?.[0] ||
-            new Date().getFullYear().toString()
+          new Date().getFullYear().toString()
         ),
         mileage: parseInt(aiResponse.odometer?.replace(/[^\d]/g, "") || "0"),
         condition: aiResponse.condition || "unknown",
