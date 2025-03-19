@@ -314,7 +314,7 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 		sendResponseToDatabase(listing, UserID)
 	}
 
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(listing)
 }
 
 // Listing Struct
