@@ -8,10 +8,12 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/MaiTra10/CarLens/api/internal"
-	"github.com/MaiTra10/CarLens/api/routes/user"
+	"github.com/MaiTra10/CarLens/api/routes/user/generic"
 )
 
 // Structs
@@ -109,6 +111,42 @@ func fetchURLContent(rawURL string) (string, error) {
 // Main, AIHandler function
 func AIHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Debug: AI Request Start.")
+
+	// Check if the request contains a JWT Cookie
+	var UserID string
+	var LoggedIn bool
+	access_token, err := r.Cookie("access_token")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			fmt.Println(w, "Cookie not found")
+		}
+		fmt.Println(w, "Error retrieving access_token:", err)
+	} else {
+		// try to decode JWT Cookie
+		JWTParameters, err := generic.DecodeJWT(access_token.Value)
+		if err != nil {
+			fmt.Println("User is not logged in")
+		}
+
+		// Check expiration of JWT
+		exp, err := strconv.ParseFloat(JWTParameters.Exp, 64) // JWT uses Unix time (float64)
+		if err != nil {
+			fmt.Println("Error converting to float64:", err)
+			return
+		}
+
+		expirationTime := time.Unix(int64(exp), 0)
+		if time.Now().After(expirationTime) {
+			fmt.Println("Token has expired")
+			http.Error(w, `{"error": "User Session has expired"}`, http.StatusNotAcceptable)
+			return
+		} else {
+			fmt.Printf("Token is valid until %s\n", expirationTime)
+		}
+
+		UserID, err = generic.GetUserFromEmail(JWTParameters.Sub)
+		LoggedIn = true
+	}
 
 	//set replay header
 	w.Header().Set("Content-Type", "application/json")
@@ -269,12 +307,14 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error:", err)
 		return
 	}
-	fmt.Println("\n__________________________________________\n")
-	fmt.Printf("Type of listing: %T\n", listing)
-	fmt.Printf("%+v\n", listing)
-	sendResponseToDatabase(listing)
+	// fmt.Println("\n__________________________________________\n")
+	// fmt.Printf("Type of listing: %T\n", listing)
+	// fmt.Printf("%+v\n", listing)
+	if LoggedIn {
+		sendResponseToDatabase(listing, UserID)
+	}
 
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(listing)
 }
 
 // Listing Struct
@@ -364,9 +404,6 @@ func ParseAIResponseToListing(aiResponse string) (*Listing, error) {
 		}
 	}
 
-	// Attribute the user to this listing
-	listing.UploadUserUUID = user.GetUserSession()
-
 	return listing, nil
 }
 
@@ -378,9 +415,11 @@ func cleanPrice(price string) string {
 	return price
 }
 
-func sendResponseToDatabase(response *Listing) bool {
+func sendResponseToDatabase(response *Listing, userID string) bool {
 	fmt.Println("Sending Listing to database...")
 
+	// Attribute the user to this listing
+	response.UploadUserUUID = userID
 	// Initialize the Supabase client
 	supabase := internal.GetSupabaseClient()
 	// Insert the response (which is a single Listing) into the database
