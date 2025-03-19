@@ -13,7 +13,6 @@ func StartServer() {
 
 	// Define our routes
 	http.HandleFunc("/login", user.LoginHandler)
-	http.HandleFunc("/logout", user.LogoutHandler)
 	http.HandleFunc("/register", user.RegisterHandler)
 
 	http.HandleFunc("/ai", ai.AIHandler)
