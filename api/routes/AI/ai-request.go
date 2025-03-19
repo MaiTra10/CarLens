@@ -195,7 +195,7 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 							"recall_information": "<value>",
 							"listing_summary": "<value>"
 							}
-							- Make sure to return the exact keys as shown above in the response.
+							- Make sure to return the exact keys as shown above in the response. Suppose all entries are string type.
 							- Keep responses concise and to the point.
 							- If you cannot find the information for some of these values, attempt to find data from the description. 
 							- If data is not found on the page, reason possible data using info known about the car model and parts/modifcations mentioned in listing. 
