@@ -1,4 +1,3 @@
-// File: components/layout/navbar.tsx
 "use client";
 
 import Link from "next/link";
@@ -103,16 +102,6 @@ export default function Navbar({ isGuestMode = false }: NavbarProps) {
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/profile">Profile</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/settings">Settings</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/history">Estimate History</Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
                   Log out
                 </DropdownMenuItem>
@@ -159,15 +148,6 @@ export default function Navbar({ isGuestMode = false }: NavbarProps) {
                 </div>
               ) : isAuthenticated ? (
                 <div className="flex flex-col space-y-2">
-                  <Link href="/profile">
-                    <Button variant="ghost" className="w-full justify-start" size="sm">Profile</Button>
-                  </Link>
-                  <Link href="/settings">
-                    <Button variant="ghost" className="w-full justify-start" size="sm">Settings</Button>
-                  </Link>
-                  <Link href="/history">
-                    <Button variant="ghost" className="w-full justify-start" size="sm">Estimate History</Button>
-                  </Link>
                   <Button 
                     variant="ghost" 
                     className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50" 

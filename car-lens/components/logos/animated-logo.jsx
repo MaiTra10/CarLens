@@ -7,7 +7,7 @@ const AnimatedLogo = ({ className = "" }) => {
     <div className={`relative overflow-hidden ${className}`} style={{ height: "60px", width: "220px" }}>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 60" className="w-full h-full">
         {/* Logo Text */}
-        <text x="50" y="38" fontFamily="Arial" fontWeight="bold" fontSize="28" fill="#000">
+        <text x="50" y="38" fontWeight="bold" fontSize="28" fill="#000">
           Car<tspan fill="#3B82F6">Lens</tspan>
         </text>
         
