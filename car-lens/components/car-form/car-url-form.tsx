@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
 import type { Estimate } from "@/app/dashboard/page";
+import CarLoadingAnimation from "@/components/animations/car-loading-animation";
 
 // Generate a random ID for demo purposes
 const generateId = () => Math.random().toString(36).substring(2, 9);
@@ -130,6 +131,9 @@ export function CarUrlForm({ onSuccess }: CarUrlFormProps) {
           )}
         </Button>
       </form>
+
+      {isLoading && <CarLoadingAnimation />}
+      
       {result && (
         <div className="mt-6 p-4 border rounded-lg bg-slate-50">
           <h3 className="font-medium text-lg mb-2">Price Estimate</h3>
@@ -142,15 +146,32 @@ export function CarUrlForm({ onSuccess }: CarUrlFormProps) {
               <span className="font-semibold">Mileage:</span>{" "}
               {result.mileage.toLocaleString()} miles
             </p>
+            {result.condition && result.condition !== "unknown" && (
+              <p>
+                <span className="font-semibold">Condition:</span>{" "}
+                {result.condition.charAt(0).toUpperCase() + result.condition.slice(1)}
+              </p>
+            )}
+            {result.transmission && result.transmission !== "unknown" && (
+              <p>
+                <span className="font-semibold">Transmission:</span>{" "}
+                {result.transmission.charAt(0).toUpperCase() + result.transmission.slice(1)}
+              </p>
+            )}
+            {result.drivetrain && result.drivetrain !== "unknown" && (
+              <p>
+                <span className="font-semibold">Drivetrain:</span>{" "}
+                {result.drivetrain.toUpperCase()}
+              </p>
+            )}
             <p>
               <span className="font-semibold">Estimated Price:</span>{" "}
               <span className="text-xl font-bold text-green-600">
-                ${result.estimatedPrice.toLocaleString()}
+                ${result.estimatedPrice.toLocaleString()} CAD
               </span>
             </p>
             <p className="text-sm text-slate-500">
-              Based on data scraped from the provided URL. High confidence
-              estimate.
+              Based on data scraped from the provided URL. High confidence estimate.
             </p>
           </div>
         </div>

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 import type { Estimate } from "@/app/dashboard/page";
+import CarLoadingAnimation from "@/components/animations/car-loading-animation";
 
 // Generate a random ID for demo purposes
 const generateId = () => Math.random().toString(36).substring(2, 9);
@@ -381,6 +382,8 @@ Only respond with a properly formatted JSON object and nothing else.`;
           )}
         </Button>
       </form>
+
+      {isLoading && <CarLoadingAnimation />}
 
       {result && (
         <div className="mt-6 p-4 border rounded-lg bg-slate-50">
