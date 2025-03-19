@@ -11,17 +11,28 @@ import { EstimateHistory } from "@/components/car-form/estimate-history";
 import { useSearchParams } from "next/navigation";
 import ProtectedRoute from "@/context/protected-route";
 
-// Define the Estimate type
 export type Estimate = {
   id: string;
   makeModel: string;
   year: number;
   mileage: number;
-  condition?: string;
-  features?: string;
+  condition: string;
   estimatedPrice: number;
   createdAt: Date;
   isScraped: boolean;
+  source?: string;
+  dealer?: string;
+  dealerRating?: string;
+  transmission?: string;
+  drivetrain?: string;
+  descr?: string;
+  specifications?: string;
+  creationDate?: string;
+  freeCarfax?: string;
+  vin?: string;
+  insuranceStatus?: string;
+  recallInformation?: string;
+  listingSummary?: string;
 };
 
 export default function DashboardPage() {
