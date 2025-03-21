@@ -459,7 +459,7 @@ Only respond with a properly formatted JSON object and nothing else.`;
               {result.recallInformation}
             </p>
             <p className="text-sm text-slate-500">
-              Based on data scraped from the provided URL.
+              Based on data provided from the user.
             </p>
           </div>
         </div>
