@@ -112,7 +112,7 @@ export default function RegisterPage() {
 
       // Registration successful
       setIsLoading(false);
-      router.push("/login?registered=true");
+      router.push("/login?registered");
     } catch (error: any) {
       setError(error.message);
       setIsLoading(false);
@@ -181,9 +181,8 @@ export default function RegisterPage() {
                   }
                 }}
                 required
-                className={`h-11 ${
-                  passwordErrors.length > 0 ? "border-red-500" : ""
-                }`}
+                className={`h-11 ${passwordErrors.length > 0 ? "border-red-500" : ""
+                  }`}
               />
               {passwordErrors.length > 0 && (
                 <div className="text-red-500 text-sm mt-1">

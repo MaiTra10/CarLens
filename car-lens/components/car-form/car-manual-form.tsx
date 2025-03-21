@@ -39,6 +39,14 @@ export function ManualCarForm({ onSuccess }: ManualCarFormProps) {
   const [error, setError] = useState("");
   const [result, setResult] = useState<Estimate | null>(null);
 
+  const calculatePercentage = (mileage: number) => {
+    const k = 0.00001; // Adjust this value to control the decay rate
+    if (mileage <= 10000) {
+      return 100; // 100% for mileage 10,000 or less
+    }
+    return 100 * Math.exp(-k * (mileage - 100000)); // Logarithmic decay for mileage above 10,000
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -420,10 +428,20 @@ Only respond with a properly formatted JSON object and nothing else.`;
               <span className="font-semibold">Specifications:</span>{" "}
               {result.specifications}
             </p>
-            <p>
-              <span className="font-semibold">Mileage:</span>{" "}
-              {result.mileage.toLocaleString()} miles
-            </p>
+            <div>
+              <p>
+                <span className="font-semibold">Mileage:</span> {result.mileage.toLocaleString()} miles
+              </p>
+              <div className="w-full h-2 bg-gray-200 mt-2 rounded-full">
+                <div
+                  className="h-full rounded-full"
+                  style={{
+                    width: `${Math.min(calculatePercentage(result.mileage), 100)}%`,
+                    backgroundColor: 'green',
+                  }}
+                ></div>
+              </div>
+            </div>
             <p>
               <span className="font-semibold">Condition:</span>{" "}
               {result.condition.toLocaleString()}

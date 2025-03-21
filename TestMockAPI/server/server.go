@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	ai "github.com/MaiTra10/CarLens/api/routes/AI"
+	"github.com/MaiTra10/CarLens/api/routes/database"
 	"github.com/MaiTra10/CarLens/api/routes/user"
 	"github.com/rs/cors" // Import CORS package
 )
@@ -16,6 +17,7 @@ func StartServer() {
 	http.HandleFunc("/register", user.RegisterHandler)
 
 	http.HandleFunc("/ai", ai.AIHandler)
+	http.HandleFunc("/listings", database.DBHandler)
 
 	// Enable CORS
 	c := cors.New(cors.Options{
