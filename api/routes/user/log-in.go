@@ -39,17 +39,17 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	uuid, _ := userResult["user_uuid"].(string)
+	userUUID, _ := userResult["user_uuid"].(string)
 
 	var hashResult map[string]interface{}
-	err = supabase.DB.From("passwords").Select("hash").Single().Filter("user_uuid", "eq", uuid).Execute(&hashResult)
+	err = supabase.DB.From("passwords").Select("hash").Single().Filter("user_uuid", "eq", userUUID).Execute(&hashResult)
 	if err != nil {
 		http.Error(w, "ERROR: Unable to retrieve hash from 'passwords'", http.StatusUnauthorized)
 		return
 	}
 
 	var saltResult map[string]interface{}
-	err = supabase.DB.From("passwords").Select("salt").Single().Filter("user_uuid", "eq", uuid).Execute(&saltResult)
+	err = supabase.DB.From("passwords").Select("salt").Single().Filter("user_uuid", "eq", userUUID).Execute(&saltResult)
 	if err != nil {
 		http.Error(w, "ERROR: Unable to retrieve salt from 'passwords'", http.StatusUnauthorized)
 		return
@@ -65,7 +65,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, jwtExpiration, err := generic.CreateJWT(userEmail)
+	token, jwtExpiration, err := generic.CreateJWT(userEmail, userUUID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

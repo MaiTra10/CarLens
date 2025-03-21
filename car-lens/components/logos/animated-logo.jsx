@@ -12,7 +12,7 @@ const AnimatedLogo = ({ className = "" }) => {
         </text>
         
         {/* Race Car - Starting position adjusted to be closer to logo */}
-        <g className="car-animation">
+        <g className="logo-car-animation">
           {/* Wheels - Now positioned at starting point closer to the logo */}
           <circle cx="10" cy="48" r="4" fill="#1E293B" />
           <circle cx="10" cy="48" r="2" fill="#94A3B8" />
@@ -43,11 +43,11 @@ const AnimatedLogo = ({ className = "" }) => {
       </svg>
       
       <style jsx>{`
-        .car-animation {
-          animation: driveCar 4s linear infinite;
+        .logo-car-animation {
+          animation: logoCarDrive 4s linear infinite;
         }
         
-        @keyframes driveCar {
+        @keyframes logoCarDrive {
           0% {
             transform: translateX(0);
           }

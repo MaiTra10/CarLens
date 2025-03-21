@@ -10,15 +10,16 @@ import (
 
 var secretKey = os.Getenv("JWT_TOKEN_SECRET")
 
-func CreateJWT(user_email string) (string, tm.Time, error) {
+func CreateJWT(userEmail string, userUUID string) (string, tm.Time, error) {
 
 	timeNow := tm.Now().UTC()
 	jwtExpiration := timeNow.Add(tm.Hour * 24 * 7)
 
 	jwtMapping := jwt.MapClaims{
-		"sub": user_email,
-		"exp": jwtExpiration.Unix(),
-		"iat": timeNow.Unix(),
+		"sub":       userEmail,
+		"user_uuid": userUUID,
+		"exp":       jwtExpiration.Unix(),
+		"iat":       timeNow.Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtMapping)
@@ -33,9 +34,10 @@ func CreateJWT(user_email string) (string, tm.Time, error) {
 }
 
 type JWTParameters struct {
-	Sub string `json:"sub"`
-	Iat string `json:"iat"`
-	Exp string `json:"exp"`
+	Sub      string `json:"sub"`
+	UserUUID string `json:"user_uuid"`
+	Iat      string `json:"iat"`
+	Exp      string `json:"exp"`
 }
 
 func DecodeJWT(tokenString string) (JWTParameters, error) {

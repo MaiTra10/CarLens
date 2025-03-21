@@ -1,4 +1,3 @@
-// app/register/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -16,7 +15,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Checkbox } from "@/components/ui/checkbox";
 import AnimatedLogo from "@/components/logos/animated-logo";
 
 export default function RegisterPage() {
@@ -24,7 +22,6 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [acceptTerms, setAcceptTerms] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
@@ -86,12 +83,6 @@ export default function RegisterPage() {
       return;
     }
 
-    if (!acceptTerms) {
-      setError("You must accept the terms and conditions");
-      setIsLoading(false);
-      return;
-    }
-
     try {
       // Updated URL to match your backend endpoint
       const response = await fetch("http://localhost:8080/register", {
@@ -112,9 +103,15 @@ export default function RegisterPage() {
 
       // Registration successful
       setIsLoading(false);
-      router.push("/login?registered");
-    } catch (error: any) {
-      setError(error.message);
+
+      router.push("/login?registered=true");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An unknown error occurred");
+      }
+      
       setIsLoading(false);
     }
   };
@@ -205,26 +202,6 @@ export default function RegisterPage() {
                 required
                 className="h-11"
               />
-            </div>
-
-            <div className="flex items-center space-x-2 mt-3">
-              <Checkbox
-                id="terms"
-                checked={acceptTerms}
-                onCheckedChange={(checked) =>
-                  setAcceptTerms(checked as boolean)
-                }
-              />
-              <Label htmlFor="terms" className="text-sm">
-                I accept the{" "}
-                <Link href="/terms" className="text-blue-500 hover:underline">
-                  Terms and Conditions
-                </Link>{" "}
-                and{" "}
-                <Link href="/privacy" className="text-blue-500 hover:underline">
-                  Privacy Policy
-                </Link>
-              </Label>
             </div>
           </CardContent>
 
