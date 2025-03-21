@@ -136,9 +136,9 @@ export function CarUrlForm({ onSuccess }: CarUrlFormProps) {
             <span>Analysis Date:</span>{" "}
             {result.createdAt.toLocaleString()}
           </p>
-          <p className="font-medium text-lg mb-2">
+          <a className="font-medium text-lg mb-2" href={result.source}>
             <span className="font-semibold">Vehicle:</span> {result.makeModel}{" "}
-          </p>
+          </a>
           <div className="space-y-2">
             <p>
               <span className="font-semibold">Estimated Price:</span>{" "}
@@ -150,6 +150,10 @@ export function CarUrlForm({ onSuccess }: CarUrlFormProps) {
               <span className="font-semibold">Summary:</span>{" "}
               {result.listingSummary}
             </p>
+            <iframe
+              className="rounded-lg shadow-2xs border-1 border-gray-300 p-2"
+              src={result.source} width="100%" height="400"></iframe>
+
             <hr />
             <p>
               <span className="font-semibold">Description:</span>{" "}
