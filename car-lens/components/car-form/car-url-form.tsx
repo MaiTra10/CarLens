@@ -132,25 +132,82 @@ export function CarUrlForm({ onSuccess }: CarUrlFormProps) {
       </form>
       {result && (
         <div className="mt-6 p-4 border rounded-lg bg-slate-50">
-          <h3 className="font-medium text-lg mb-2">Price Estimate</h3>
+          <p className="font-light text-slate-500">
+            <span>Analysis Date:</span>{" "}
+            {result.createdAt.toLocaleString()}
+          </p>
+          <p className="font-medium text-lg mb-2">
+            <span className="font-semibold">Vehicle:</span> {result.makeModel}{" "}
+          </p>
           <div className="space-y-2">
-            <p>
-              <span className="font-semibold">Vehicle:</span> {result.makeModel}{" "}
-              ({result.year})
-            </p>
-            <p>
-              <span className="font-semibold">Mileage:</span>{" "}
-              {result.mileage.toLocaleString()} miles
-            </p>
             <p>
               <span className="font-semibold">Estimated Price:</span>{" "}
               <span className="text-xl font-bold text-green-600">
                 ${result.estimatedPrice.toLocaleString()}
               </span>
             </p>
+            <p>
+              <span className="font-semibold">Summary:</span>{" "}
+              {result.listingSummary}
+            </p>
+            <hr />
+            <p>
+              <span className="font-semibold">Description:</span>{" "}
+              {result.descr}
+            </p>
+
+            <p>
+              <span className="font-semibold">Transmission:</span>{" "}
+              {result.transmission}
+            </p>
+            <p>
+              <span className="font-semibold">Drivetrain:</span>{" "}
+              {result.drivetrain}
+            </p>
+            <p>
+              <span className="font-semibold">Specifications:</span>{" "}
+              {result.specifications}
+            </p>
+            <p>
+              <span className="font-semibold">Mileage:</span>{" "}
+              {result.mileage.toLocaleString()} miles
+            </p>
+            <p>
+              <span className="font-semibold">Condition:</span>{" "}
+              {result.condition.toLocaleString()}
+            </p>
+
+            <hr />
+            <p>
+              <span className="font-semibold">Seller Type:</span>{" "}
+              {result.dealer}
+            </p>
+            <p>
+              <span className="font-semibold">Dealer Rating:</span>{" "}
+              {result.dealerRating}
+            </p>
+            <p>
+              <span className="font-semibold">Listing Date:</span>{" "}
+              {result.creationDate}
+            </p>
+            <p>
+              <span className="font-semibold">Free Carfax?:</span>{" "}
+              {result.freeCarfax}
+            </p>
+            <p>
+              <span className="font-semibold">VIN:</span>{" "}
+              {result.vin}
+            </p>
+            <p>
+              <span className="font-semibold">Insurance Status:</span>{" "}
+              {result.insuranceStatus}
+            </p>
+            <p>
+              <span className="font-semibold">Recall Information:</span>{" "}
+              {result.recallInformation}
+            </p>
             <p className="text-sm text-slate-500">
-              Based on data scraped from the provided URL. High confidence
-              estimate.
+              Based on data scraped from the provided URL.
             </p>
           </div>
         </div>
