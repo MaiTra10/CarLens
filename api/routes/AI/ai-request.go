@@ -87,7 +87,7 @@ func fetchURLContent(rawURL string) (string, error) {
 		return "", fmt.Errorf("request creation faild for jinaAI: %v", err)
 	}
 
-	req.Header.Set("Authorization", "Bearer jina_1b29c5ff413144aa8056aa02dc0f7f74W1tAnacsgJXZGcYsOa19xD7UI8C4") //This is api key
+	req.Header.Set("Authorization", "Bearer jina_7e0743de7e514871bbd65521d4bd1e2fWpeHaCrm4f104ry_pyhbMH1wI3xB") //This is api key
 
 	client := &http.Client{}
 	resp, err := client.Do(req)

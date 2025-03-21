@@ -29,10 +29,10 @@ export function EstimateHistory({ estimates }: EstimateHistoryProps) {
             <div>
               <p className="font-semibold">{estimate.makeModel}</p>
               <div className="text-sm text-slate-600">
-                <p>{estimate.year} • {estimate.mileage} miles</p>
-                <p>${estimate.estimatedPrice}</p>
+                <p>{estimate.condition} • {estimate.mileage.toLocaleString()} miles</p>
+                <p>${estimate.estimatedPrice.toLocaleString()}</p>
                 <p className="text-xs text-slate-400">
-                  {/* {formatTimeAgo(estimate.createdAt)} */}
+                  {formatTimeAgo(estimate.createdAt)}
                 </p>
               </div>
             </div>

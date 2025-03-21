@@ -92,22 +92,23 @@ export default function DashboardPage() {
 
         const listings = await response.json();
 
+        const parsedListings = []
+
         var arrayLength = listings.length;
         for (var i = 0; i < arrayLength; i++) {
           const currentListing = listings[i]
 
           const parsedListing: Estimate = {
             id: generateId(),
-            makeModel: `${currentListing.make} ${currentListing.model}`,
+            makeModel: `${currentListing.title}`,
             year: parseInt(currentListing.year),
-            mileage: parseInt(currentListing.mileage),
+            mileage: parseInt(currentListing.odometer),
             condition: currentListing.condition,
             // Parse price from AI response or use fallback
             estimatedPrice: currentListing.price,
             createdAt: new Date(),
             isScraped: false,
             // Only include fields that were explicitly entered by the user
-            source: "manual entry",
             transmission: currentListing.transmission !== "unspecified" ? currentListing.transmission : undefined,
             drivetrain: currentListing.drivetrain !== "unspecified" ? currentListing.drivetrain : undefined,
             descr: currentListing.features || undefined,
@@ -119,9 +120,10 @@ export default function DashboardPage() {
             listingSummary: currentListing.listing_summary
           };
 
+          parsedListings.push(parsedListing)
         }
 
-        setEstimates(listings)
+        setEstimates(parsedListings)
 
         if (!response.ok) {
           const errorData = await response.text();
