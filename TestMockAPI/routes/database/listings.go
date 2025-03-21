@@ -44,6 +44,8 @@ func DBHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//set replay header
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(dbResult)
 
