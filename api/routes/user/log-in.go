@@ -77,7 +77,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 		Secure:   true,
 		Expires:  jwtExpiration,
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteNoneMode,
 	})
 
 	w.WriteHeader(http.StatusOK)
