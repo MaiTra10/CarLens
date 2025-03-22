@@ -19,7 +19,7 @@ func StartServer() {
 
 	// Enable CORS
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://18.237.85.135:3000"}, // Allow frontend (your React app)
+		AllowedOrigins:   []string{"http://localhost:3000"}, // Allow frontend (your React app)
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,

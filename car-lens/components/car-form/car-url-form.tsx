@@ -42,7 +42,7 @@ export function CarUrlForm({ onSuccess }: CarUrlFormProps) {
       }
 
       // Call backend AI service
-      const response = await fetch("http://54.202.205.174:8080/ai", {
+      const response = await fetch("http://localhost:8080/ai", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -56,7 +56,7 @@ function DashboardContent() {
   // Use useCallback to memoize the function
   const fetchListings = useCallback(async () => {
     try {
-      const response = await fetch("http://54.202.205.174:8080/listings", {
+      const response = await fetch("http://localhost:8080/listings", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
