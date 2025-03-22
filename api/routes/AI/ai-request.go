@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
 	"net/http"
 	"net/url"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -88,9 +88,9 @@ func fetchURLContent(rawURL string) (string, error) {
 		return "", fmt.Errorf("request creation faild for jinaAI: %v", err)
 	}
 
-	var jina_key := os.Getenv("JINA_KEY");
+	var jina_key = os.Getenv("JINA_KEY")
 
-	req.Header.Set("Authorization", "Bearer " + jina_key) //This is api key
+	req.Header.Set("Authorization", "Bearer "+jina_key) //This is api key
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -238,7 +238,7 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 	client := &http.Client{}
 	req, _ := http.NewRequest("POST", "https://api.deepseek.com/chat/completions", bytes.NewBuffer(reqBody))
 
-	apiKey := os.Getenv("DEEPSEEK_KEY");
+	apiKey := os.Getenv("DEEPSEEK_KEY")
 	if apiKey == "" {
 		http.Error(w, `{"error": "API key not configured"}`, http.StatusInternalServerError)
 		return
