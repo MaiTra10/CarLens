@@ -4,6 +4,8 @@
 The AI-Powered Listing Management System automates the extraction, parsing, storage, and presentation of car listings. It leverages the AI Models of Deepseek and Jira to web scrape listing data, map the extracted values to predefined variables, store the information in a AWS SQL database, and dynamically generate frontend cards that display the listing details along with a summary evaluation of whether the listing is a good deal.
 
 ## How To Use
+1. **Follow the link below.**
+    http://34.222.57.174:3000
 1. **Register, login, or continue as guest.**
     Registering and logging in will save your query requests to the database and will be stored on your account.
     <br>**Sample Login:**
