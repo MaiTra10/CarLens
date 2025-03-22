@@ -2,14 +2,14 @@
     "name": "car-lens",
     "builds": [
         {
-            "src": "next.config.js",
+            "src": "car-lens/next.config.js",
             "use": "@vercel/next"
         }
     ],
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "/"
+            "dest": "car-lens/$1"
         }
     ]
 }
