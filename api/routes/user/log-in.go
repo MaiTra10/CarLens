@@ -79,7 +79,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		Name:     "access_token",
 		Value:    token,
 		HttpOnly: true,
-		Secure:   false,
+		Secure:   true,
 		Expires:  jwtExpiration,
 		SameSite: http.SameSiteStrictMode,
 	})
