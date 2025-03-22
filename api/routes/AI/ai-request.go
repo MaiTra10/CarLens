@@ -195,6 +195,7 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 							"recall_information": "<value>",
 							"listing_summary": "<value>"
 							}
+							- If the information/URL is not a car, do not return any information.
 							- Make sure to return the exact keys as shown above in the response. Suppose all entries are string type.
 							- Always paraphraze information.
 							- the price field should always be your own estimate based on the car model. DO NOT USE THE LISTING PRICE mentioned anywhere on the page
