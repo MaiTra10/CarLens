@@ -23,14 +23,15 @@ export function EstimateHistory({ estimates }: EstimateHistoryProps) {
 
   return (
     <div className="space-y-4">
-      {estimates.map((estimate) => (
-        <div key={estimate.id} className="border rounded-lg p-3 hover:bg-slate-50">
+      {estimates.map((estimate, index) => (
+        <div key={index} className="border rounded-lg p-3 hover:bg-slate-50">
           <div className="flex items-start justify-between">
             <div>
               <p className="font-semibold">{estimate.makeModel}</p>
               <div className="text-sm text-slate-600">
-                <p>{estimate.year} • {estimate.mileage.toLocaleString()} miles</p>
-                <p>${estimate.estimatedPrice.toLocaleString()}</p>
+                <p className="text-xs">{estimate.specifications}</p>
+                <p className="text-xs mt-2 font-bold">{estimate.mileage.toLocaleString()} miles</p>
+                <p className="font-semibold mt-1 mb-1 text-lg">${estimate.estimatedPrice.toLocaleString()}</p>
                 <p className="text-xs text-slate-400">
                   {formatTimeAgo(estimate.createdAt)}
                 </p>
