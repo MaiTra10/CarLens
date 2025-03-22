@@ -5,7 +5,7 @@ The AI-Powered Listing Management System automates the extraction, parsing, stor
 
 ## How To Use
 1. **Follow the link below.**
-    http://34.222.57.174:3000
+    http://18.237.85.135:3000
 1. **Register, login, or continue as guest.**
     Registering and logging in will save your query requests to the database and will be stored on your account.
     <br>**Sample Login:**
