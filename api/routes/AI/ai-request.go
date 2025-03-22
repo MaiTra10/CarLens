@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -87,7 +88,9 @@ func fetchURLContent(rawURL string) (string, error) {
 		return "", fmt.Errorf("request creation faild for jinaAI: %v", err)
 	}
 
-	req.Header.Set("Authorization", "Bearer jina_7e0743de7e514871bbd65521d4bd1e2fWpeHaCrm4f104ry_pyhbMH1wI3xB") //This is api key
+	var jina_key := os.Getenv("JINA_KEY");
+
+	req.Header.Set("Authorization", "Bearer " + jina_key) //This is api key
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -235,9 +238,7 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 	client := &http.Client{}
 	req, _ := http.NewRequest("POST", "https://api.deepseek.com/chat/completions", bytes.NewBuffer(reqBody))
 
-	//set api key and header for Request
-	apiKey := "sk-c0864ddde7454abea3264922ab943db5" //This should be hidden or store as envirment varable, but it's just a small project.
-	//I guess no one will use this for bad things... Right?
+	apiKey := os.Getenv("DEEPSEEK_KEY");
 	if apiKey == "" {
 		http.Error(w, `{"error": "API key not configured"}`, http.StatusInternalServerError)
 		return
