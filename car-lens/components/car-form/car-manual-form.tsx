@@ -40,6 +40,14 @@ export function ManualCarForm({ onSuccess }: ManualCarFormProps) {
   const [error, setError] = useState("");
   const [result, setResult] = useState<Estimate | null>(null);
 
+  const calculatePercentage = (mileage: number) => {
+    const k = 0.00001; // Adjust this value to control the decay rate
+    if (mileage <= 10000) {
+      return 100; // 100% for mileage 10,000 or less
+    }
+    return 100 * Math.exp(-k * (mileage - 100000)); // Logarithmic decay for mileage above 10,000
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -89,7 +97,7 @@ IMPORTANT: Format your response as a valid JSON object with the following struct
 }
 
 Only respond with a properly formatted JSON object and nothing else.`;
-      
+
       // Call backend AI service
       const response = await fetch("http://localhost:8080/ai", {
         method: "POST",
@@ -97,7 +105,7 @@ Only respond with a properly formatted JSON object and nothing else.`;
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           message: carDescription
         }),
       });
@@ -113,7 +121,7 @@ Only respond with a properly formatted JSON object and nothing else.`;
       } catch (jsonError) {
         console.error("Error parsing JSON response:", jsonError);
         console.log("Raw response text:", await response.text().catch(() => "Unable to get response text"));
-        
+
         // Create a fallback response
         aiResponse = {
           source: "manual entry",
@@ -132,14 +140,14 @@ Only respond with a properly formatted JSON object and nothing else.`;
       // Log the raw response for debugging
       console.log("Raw response:", aiResponse);
       console.log("Response type:", typeof aiResponse);
-      
+
       // If AI doesn't return a usable price estimate, calculate one
       if (!aiResponse.price || aiResponse.price === "unknown" || isNaN(parseInt(aiResponse.price))) {
         const calculatedPrice = calculateFallbackPrice();
         aiResponse.price = calculatedPrice.toString();
         console.log("Using fallback price calculation:", calculatedPrice);
       }
-      
+
       // Create estimate object from AI response or fall back to calculated values
       const estimate: Estimate = {
         id: generateId(),
@@ -163,19 +171,19 @@ Only respond with a properly formatted JSON object and nothing else.`;
         recallInformation: aiResponse.recall_information,
         listingSummary: aiResponse.listing_summary
       };
-      
+
       // Function to parse price from AI response
       function parseAIPrice(priceStr: string | undefined): number {
         // If price is undefined, empty, or "unknown", use fallback calculation
         if (!priceStr || priceStr === "" || priceStr === "unknown") {
           return calculateFallbackPrice();
         }
-        
+
         try {
           // Remove all non-numeric characters except for decimal points
           const numericPrice = priceStr.replace(/[^0-9.]/g, "");
           const parsedPrice = parseInt(numericPrice);
-          
+
           // If parsing yields a valid number, return it, otherwise use fallback
           return !isNaN(parsedPrice) && parsedPrice > 0 ? parsedPrice : calculateFallbackPrice();
         } catch (e) {
@@ -195,7 +203,7 @@ Only respond with a properly formatted JSON object and nothing else.`;
       setIsLoading(false);
     }
   };
-  
+
   // Fallback calculation in case AI service doesn't return a price estimate
   const calculateFallbackPrice = () => {
     const year = parseInt(formData.year);
@@ -387,40 +395,92 @@ Only respond with a properly formatted JSON object and nothing else.`;
 
       {result && (
         <div className="mt-6 p-4 border rounded-lg bg-slate-50">
-          <h3 className="font-medium text-lg mb-2">Price Estimate</h3>
+          <p className="font-light text-slate-500">
+            <span>Analysis Date:</span>{" "}
+            {result.createdAt.toLocaleString()}
+          </p>
+          <p className="font-medium text-lg mb-2">
+            <span className="font-semibold">Vehicle:</span> {result.makeModel}{" "}
+          </p>
           <div className="space-y-2">
-            <p>
-              <span className="font-semibold">Vehicle:</span> {result.makeModel} ({result.year})
-            </p>
-            <p>
-              <span className="font-semibold">Mileage:</span> {result.mileage.toLocaleString()} miles
-            </p>
-            {result.condition && (
-              <p>
-                <span className="font-semibold">Condition:</span>{" "}
-                {result.condition.charAt(0).toUpperCase() + result.condition.slice(1)}
-              </p>
-            )}
-            {result.transmission && result.transmission !== "unspecified" && result.transmission !== "unknown" && (
-              <p>
-                <span className="font-semibold">Transmission:</span>{" "}
-                {result.transmission.charAt(0).toUpperCase() + result.transmission.slice(1)}
-              </p>
-            )}
-            {result.drivetrain && result.drivetrain !== "unspecified" && result.drivetrain !== "unknown" && (
-              <p>
-                <span className="font-semibold">Drivetrain:</span>{" "}
-                {result.drivetrain.toUpperCase()}
-              </p>
-            )}
             <p>
               <span className="font-semibold">Estimated Price:</span>{" "}
               <span className="text-xl font-bold text-green-600">
-                ${result.estimatedPrice.toLocaleString()} CAD
+                ${result.estimatedPrice.toLocaleString()}
               </span>
             </p>
+            <p>
+              <span className="font-semibold">Summary:</span>{" "}
+              {result.listingSummary}
+            </p>
+            <hr />
+            <p>
+              <span className="font-semibold">Description:</span>{" "}
+              {result.descr}
+            </p>
+
+            <p>
+              <span className="font-semibold">Transmission:</span>{" "}
+              {result.transmission}
+            </p>
+            <p>
+              <span className="font-semibold">Drivetrain:</span>{" "}
+              {result.drivetrain}
+            </p>
+            <p>
+              <span className="font-semibold">Specifications:</span>{" "}
+              {result.specifications}
+            </p>
+            <div>
+              <p>
+                <span className="font-semibold">Mileage:</span> {result.mileage.toLocaleString()} miles
+              </p>
+              <div className="w-full h-2 bg-gray-200 mt-2 rounded-full">
+                <div
+                  className="h-full rounded-full"
+                  style={{
+                    width: `${Math.min(calculatePercentage(result.mileage), 100)}%`,
+                    backgroundColor: 'green',
+                  }}
+                ></div>
+              </div>
+            </div>
+            <p>
+              <span className="font-semibold">Condition:</span>{" "}
+              {result.condition.toLocaleString()}
+            </p>
+
+            <hr />
+            <p>
+              <span className="font-semibold">Seller Type:</span>{" "}
+              {result.dealer}
+            </p>
+            <p>
+              <span className="font-semibold">Dealer Rating:</span>{" "}
+              {result.dealerRating}
+            </p>
+            <p>
+              <span className="font-semibold">Listing Date:</span>{" "}
+              {result.creationDate}
+            </p>
+            <p>
+              <span className="font-semibold">Free Carfax?:</span>{" "}
+              {result.freeCarfax}
+            </p>
+            <p>
+              <span className="font-semibold">VIN:</span>{" "}
+              {result.vin}
+            </p>
+            <p>
+              <span className="font-semibold">Insurance Status:</span>{" "}
+              {result.insuranceStatus}
+            </p>
+            <p>
+              <span className="font-semibold">Recall Information:</span>{" "}
+              {result.recallInformation}
+            </p>
             <p className="text-sm text-slate-500">
-              Based on AI analysis of manually entered data. {result.isScraped ? "High" : "Medium"} confidence estimate.
+              Based on data provided from the user.
             </p>
           </div>
         </div>

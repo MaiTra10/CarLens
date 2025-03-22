@@ -79,30 +79,22 @@ export default function Navbar({ isGuestMode = false }: NavbarProps) {
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
         <div className="flex items-center">
           <Link href="/" className="flex items-center">
-            <AnimatedLogo/>
+            <AnimatedLogo />
           </Link>
           {isGuestMode && (
             <span className="ml-2 bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full">
               Guest
             </span>
           )}
-          
+
           {/* Desktop Navigation */}
           <nav className="hidden md:flex ml-8 space-x-6">
             <Link href="/dashboard" className="text-slate-600 hover:text-slate-900">
               Dashboard
             </Link>
-            {!isGuestMode && isAuthenticated && (
-              <Link href="/history" className="text-slate-600 hover:text-slate-900">
-                History
-              </Link>
-            )}
-            <Link href="/help" className="text-slate-600 hover:text-slate-900">
-              Help
-            </Link>
           </nav>
         </div>
-        
+
         {/* Mobile Menu Button */}
         <div className="flex items-center md:hidden">
           <Button 
@@ -122,7 +114,7 @@ export default function Navbar({ isGuestMode = false }: NavbarProps) {
             )}
           </Button>
         </div>
-        
+
         {/* Desktop User Menu or Sign In/Register Buttons */}
         <div className="hidden md:flex items-center">
           {isGuestMode ? (
@@ -163,7 +155,7 @@ export default function Navbar({ isGuestMode = false }: NavbarProps) {
           )}
         </div>
       </div>
-      
+
       {/* Mobile Navigation Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-gray-200 bg-white shadow-md" data-mobile-menu>
@@ -191,7 +183,7 @@ export default function Navbar({ isGuestMode = false }: NavbarProps) {
             >
               Help
             </Link>
-            
+
             <div className="pt-3 border-t border-gray-100">
               {isGuestMode ? (
                 <div className="flex flex-col space-y-3">

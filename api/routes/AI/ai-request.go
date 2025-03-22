@@ -87,7 +87,7 @@ func fetchURLContent(rawURL string) (string, error) {
 		return "", fmt.Errorf("request creation faild for jinaAI: %v", err)
 	}
 
-	req.Header.Set("Authorization", "Bearer jina_1b29c5ff413144aa8056aa02dc0f7f74W1tAnacsgJXZGcYsOa19xD7UI8C4") //This is api key
+	req.Header.Set("Authorization", "Bearer jina_7e0743de7e514871bbd65521d4bd1e2fWpeHaCrm4f104ry_pyhbMH1wI3xB") //This is api key
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -196,7 +196,8 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 							"listing_summary": "<value>"
 							}
 							- Make sure to return the exact keys as shown above in the response. Suppose all entries are string type.
-							- Keep responses concise and to the point.
+							- Always paraphraze information.
+							- the price field should always be your own estimate based on the car model. DO NOT USE THE LISTING PRICE mentioned anywhere on the page
 							- If you cannot find the information for some of these values, attempt to find data from the description. 
 							- If data is not found on the page, reason possible data using info known about the car model and parts/modifcations mentioned in listing. 
 							- Only leave fields as "unknown" if they absolutely cannot be obtained.
@@ -204,7 +205,8 @@ func AIHandler(w http.ResponseWriter, r *http.Request) {
 							- drivetrain is whether the car is FWD, RWD, AWD, 4WD.
 							- Always use the highest odometer number listed in posting, assume units are km unless specified. Always Priortize milage data in description
 							- If the odometer is one of the following placeholders: (123 km ,123123 km, 1 km, 0 km), try to find the real milage. Otherwise leave as null
-							- dealer should be either "dealer" if the seller is a company, else mark it as "private sale" if the seller is a person.`
+							- dealer should be either "dealer" if the seller is a company, else mark it as "private sale" if the seller is a person.
+							`
 
 	//structure text for AI API
 	openaiReq := OpenAIRequest{

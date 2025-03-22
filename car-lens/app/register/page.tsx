@@ -103,6 +103,7 @@ export default function RegisterPage() {
 
       // Registration successful
       setIsLoading(false);
+
       router.push("/login?registered=true");
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -110,6 +111,7 @@ export default function RegisterPage() {
       } else {
         setError("An unknown error occurred");
       }
+      
       setIsLoading(false);
     }
   };
@@ -176,9 +178,8 @@ export default function RegisterPage() {
                   }
                 }}
                 required
-                className={`h-11 ${
-                  passwordErrors.length > 0 ? "border-red-500" : ""
-                }`}
+                className={`h-11 ${passwordErrors.length > 0 ? "border-red-500" : ""
+                  }`}
               />
               {passwordErrors.length > 0 && (
                 <div className="text-red-500 text-sm mt-1">

@@ -1,7 +1,7 @@
 // File: app/dashboard/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { ClientCarForms } from "@/components/car-form/client-car-forms";
 import { EstimateHistory } from "@/components/car-form/estimate-history";
 import { useSearchParams } from "next/navigation";
 import ProtectedRoute from "@/context/protected-route";
+import { ListIcon } from "lucide-react";
 
 export type Estimate = {
   id: string;
@@ -38,7 +39,7 @@ export type Estimate = {
 export default function DashboardPage() {
   const searchParams = useSearchParams();
   const isGuestMode = searchParams.get('guest') === 'true';
-  
+
   // If not guest mode, wrap content in ProtectedRoute
   const Content = () => {
     const [activeTab, setActiveTab] = useState("url");
@@ -66,10 +67,77 @@ export default function DashboardPage() {
       }
     };
 
+
+    const initialized = useRef(false)
+
+    useEffect(() => {
+      if (!initialized.current) {
+        initialized.current = true
+        fetchListings()
+      }
+    }, []);
+
+    const generateId = () => Math.random().toString(36).substring(2, 9);
+
+    const fetchListings = async () => {
+
+      try {
+        // Updated URL to match your backend endpoint
+        const response = await fetch("http://localhost:8080/listings", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const listings = await response.json();
+
+        const parsedListings = []
+
+        var arrayLength = listings.length;
+        for (var i = 0; i < arrayLength; i++) {
+          const currentListing = listings[i]
+
+          const parsedListing: Estimate = {
+            id: generateId(),
+            makeModel: `${currentListing.title}`,
+            year: parseInt(currentListing.year),
+            mileage: parseInt(currentListing.odometer),
+            condition: currentListing.condition,
+            // Parse price from AI response or use fallback
+            estimatedPrice: currentListing.price,
+            createdAt: new Date(),
+            isScraped: false,
+            // Only include fields that were explicitly entered by the user
+            transmission: currentListing.transmission !== "unspecified" ? currentListing.transmission : undefined,
+            drivetrain: currentListing.drivetrain !== "unspecified" ? currentListing.drivetrain : undefined,
+            descr: currentListing.features || undefined,
+            vin: currentListing.vin || undefined,
+            // Keep other fields from AI response
+            specifications: currentListing.specifications,
+            insuranceStatus: currentListing.insurance_status,
+            recallInformation: currentListing.recall_information,
+            listingSummary: currentListing.listing_summary
+          };
+
+          parsedListings.push(parsedListing)
+        }
+
+        setEstimates(parsedListings)
+
+        if (!response.ok) {
+          const errorData = await response.text();
+          throw new Error(errorData || "Registration failed");
+        }
+
+      } catch (error: any) {
+      }
+    };
+
     return (
       <div className="min-h-screen bg-slate-50">
         <Navbar isGuestMode={isGuestMode} />
-        
+
         <div className="container mx-auto py-6 sm:py-8 px-4">
           {isGuestMode && (
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 sm:mb-8">
@@ -88,9 +156,9 @@ export default function DashboardPage() {
               </p>
             </div>
           )}
-        
+
           <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Car Price Estimator</h1>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {/* Estimation Form */}
             <div className="lg:col-span-2">
@@ -102,7 +170,7 @@ export default function DashboardPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ClientCarForms 
+                  <ClientCarForms
                     activeTab={activeTab}
                     setActiveTab={setActiveTab}
                     onNewEstimate={handleNewEstimate}
@@ -110,7 +178,7 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
             </div>
-            
+
             {/* Estimate History or Current Estimate */}
             <div className="lg:col-span-1">
               <Card>
@@ -119,15 +187,15 @@ export default function DashboardPage() {
                     {isGuestMode ? "Current Estimate" : "Recent Estimates"}
                   </CardTitle>
                   <CardDescription>
-                    {isGuestMode 
-                      ? "Your most recent car price estimate" 
+                    {isGuestMode
+                      ? "Your most recent car price estimate"
                       : "Your saved car price estimates"}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <EstimateHistory estimates={estimates} />
                 </CardContent>
-                
+
                 {isGuestMode && (
                   <CardFooter>
                     <div className="w-full text-center">
