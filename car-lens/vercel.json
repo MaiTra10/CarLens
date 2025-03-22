@@ -6,6 +6,12 @@
             "use": "@vercel/next"
         }
     ],
+    "ignore": [
+        "api/*",
+        "TestMockAPI/*",
+        "AITestAPI/*",
+        "README.md"
+    ],
     "routes": [
         {
             "src": "/(.*)",
