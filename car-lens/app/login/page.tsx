@@ -1,4 +1,3 @@
-// File: app/login/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -28,7 +27,6 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Redirect if already authenticated
-
   useEffect(() => {
     console.log("Login page - isAuthenticated:", isAuthenticated);
 
@@ -39,20 +37,23 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, router]);
 
-  // Also update the handleSubmit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
     try {
-      console.log("Submitting login form...");
+      // Actually use the login function
       await login(email, password);
-
-      // Don't redirect here - let the useEffect handle it
-      // This avoids potential race conditions
-    } catch (error: any) {
-      setError(error.message || "An error occurred during login");
+      router.push("/dashboard");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else if (typeof error === 'string') {
+        setError(error);
+      } else {
+        setError("An error occurred during login");
+      }
       setIsLoading(false);
     }
   };
@@ -95,12 +96,6 @@ export default function LoginPage() {
             <div className="space-y-2.5">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                {/* <Link
-                  href="/forgot-password"
-                  className="text-sm text-slate-500 hover:text-slate-900"
-                >
-                  Forgot password?
-                </Link> */}
               </div>
               <Input
                 id="password"
