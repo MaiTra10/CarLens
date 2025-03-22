@@ -85,7 +85,7 @@ export default function RegisterPage() {
 
     try {
       // Updated URL to match your backend endpoint
-      const response = await fetch("http://localhost:8080/register", {
+      const response = await fetch("http://34.222.57.174:8080/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
