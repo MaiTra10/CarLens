@@ -4,3 +4,9 @@
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+[[redirects]]
+from = "https://34.222.57.174:8080/"
+to = "http://34.222.57.174:8080/"
+status = 301
+force = true
