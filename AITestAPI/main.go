@@ -94,7 +94,7 @@ type OpenAIResponse struct {
 func main() {
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/api/generate", generateHandler)
-	fmt.Println("Hosting on http://34.222.57.174:8080")
+	fmt.Println("Hosting on http://18.237.85.135:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
