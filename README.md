@@ -6,7 +6,7 @@ The AI-Powered Listing Management System automates the extraction, parsing, stor
 ## How To Use
 1. **Register, login, or continue as guest.**
     Registering and logging in will save your query requests to the database and will be stored on your account.
-    **Sample Login:**
+    <br>**Sample Login:**
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: test@sample.com
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Password: SampleTest123!
 2. **Input a URL or manually enter the information of the request you want to make.**
