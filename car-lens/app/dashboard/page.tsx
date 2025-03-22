@@ -39,18 +39,7 @@ function DashboardContent() {
   const isGuestMode = searchParams.get('guest') === 'true';
   
   const [activeTab, setActiveTab] = useState("url");
-  const [estimates, setEstimates] = useState<Estimate[]>([
-    !isGuestMode ? {
-      id: "1",
-      makeModel: "Toyota Camry",
-      year: 2019,
-      mileage: 35000,
-      condition: "Excellent",
-      estimatedPrice: 18500,
-      createdAt: new Date(),
-      isScraped: true
-    } : null
-  ].filter(Boolean) as Estimate[]);
+  const [estimates, setEstimates] = useState<Estimate[]>([]);
 
   const handleNewEstimate = (estimate: Estimate) => {
     if (isGuestMode) {
@@ -114,15 +103,15 @@ function DashboardContent() {
     } catch (error) {
       console.error(error);
     }
-  }, []); // No dependencies since it doesn't use any state or props
+  }, []); 
 
-  // Now add fetchListings to the dependency array
+
   useEffect(() => {
     if (!initialized.current) {
       initialized.current = true;
       fetchListings();
     }
-  }, [fetchListings]); // Include fetchListings in the dependency array
+  }, [fetchListings]); 
 
   return (
     <div className="min-h-screen bg-slate-50">
