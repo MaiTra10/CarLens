@@ -7,30 +7,26 @@ import (
 	ai "github.com/MaiTra10/CarLens/api/routes/AI"
 	"github.com/MaiTra10/CarLens/api/routes/user"
 	"github.com/MaiTra10/CarLens/api/routes/database"
-	"github.com/rs/cors" // Import CORS package
+	"github.com/rs/cors"
 )
 
 func StartServer() {
 
-	// Define our routes
 	http.HandleFunc("/login", user.LoginHandler)
 	http.HandleFunc("/register", user.RegisterHandler)
 
 	http.HandleFunc("/ai", ai.AIHandler)
 	http.HandleFunc("/listings", database.DBHandler)
 
-	// Enable CORS
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"}, // Allow frontend (your React app)
+		AllowedOrigins:   []string{"http://34.209.36.178:3000"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
 	})
 
-	// Wrap your router with the CORS handler
 	handler := c.Handler(http.DefaultServeMux)
 
-	// Start the server with CORS-enabled handler
 	fmt.Println("Server is running on Port 8080")
 	err := http.ListenAndServe(":8080", handler)
 	if err != nil {

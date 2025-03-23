@@ -94,7 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       console.log("Attempting login...");
-      const response = await fetch("http://localhost:8080/login", {
+      const response = await fetch("http://34.209.36.178:8080/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
