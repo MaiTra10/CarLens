@@ -19,7 +19,7 @@ func StartServer() {
 	http.HandleFunc("/listings", database.DBHandler)
 
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://carlens.netlify.app"},
+		AllowedOrigins:   []string{"http://34.209.36.178:3000"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
