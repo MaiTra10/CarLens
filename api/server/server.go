@@ -16,6 +16,7 @@ func StartServer() {
 	http.HandleFunc("/register", user.RegisterHandler)
 
 	http.HandleFunc("/ai", ai.AIHandler)
+	http.HandleFunc("/listings", database.DBHandler)
 
 	// Enable CORS
 	c := cors.New(cors.Options{

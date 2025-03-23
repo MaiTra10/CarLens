@@ -15,6 +15,11 @@ type LoginParameters struct {
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "HTTP Method Must Be POST", http.StatusMethodNotAllowed)
 		return
@@ -72,8 +77,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "access_token",
