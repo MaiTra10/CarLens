@@ -6,6 +6,7 @@ import (
 
 	ai "github.com/MaiTra10/CarLens/api/routes/AI"
 	"github.com/MaiTra10/CarLens/api/routes/user"
+	"github.com/MaiTra10/CarLens/api/routes/database"
 	"github.com/rs/cors" // Import CORS package
 )
 
