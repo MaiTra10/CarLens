@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	ai "github.com/MaiTra10/CarLens/api/routes/AI"
-	"github.com/MaiTra10/CarLens/api/routes/user"
 	"github.com/MaiTra10/CarLens/api/routes/database"
+	"github.com/MaiTra10/CarLens/api/routes/user"
 	"github.com/rs/cors"
 )
 
@@ -19,7 +19,7 @@ func StartServer() {
 	http.HandleFunc("/listings", database.DBHandler)
 
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://34.209.36.178:3000"},
+		AllowedOrigins:   []string{"http://carlens.netlify.app"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
